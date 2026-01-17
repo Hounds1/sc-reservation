@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "resolvePackageJsonExports": true,
+    "isolatedModules": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false
+  }
+}
