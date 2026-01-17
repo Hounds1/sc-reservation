@@ -1,0 +1,19 @@
+node_modules
+.env
+.env.*
+.DS_Store
+
+# Next.js
+.next
+out
+
+# Nest.js / TS build
+dist
+coverage
+
+# Logs
+*.log
+
+# Tooling caches
+.turbo
+.vscode
