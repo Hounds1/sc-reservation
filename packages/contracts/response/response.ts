@@ -2,7 +2,11 @@
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
-  error?: string;
+  error?: string | {
+    code: number;
+    message: string;
+    details?: unknown;
+  };
   message?: string;
   extensions?: Record<string, any>;
 }

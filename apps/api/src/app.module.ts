@@ -5,8 +5,9 @@ import { RedisModule } from './global/redis/redis.module';
 import { ExtensionMiddleware } from '@global/extensions';
 import { RequestHook } from './global/guards/request/request.hook';
 import { DuplicateRequestGuard } from './global/guards/request/request.guard';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { WrapResponseInterceptor } from './global/interceptors/response/response.interceptor';
+import { HttpExceptionFilter } from './global/error/exception.filter';
 
 @Module({
   imports: [RedisModule],
@@ -20,6 +21,10 @@ import { WrapResponseInterceptor } from './global/interceptors/response/response
     {
       provide: APP_INTERCEPTOR,
       useClass: WrapResponseInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
     }
   ],
 })
