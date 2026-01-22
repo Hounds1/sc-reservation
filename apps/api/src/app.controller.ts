@@ -7,8 +7,18 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
+  async getHello(): Promise<Test> {
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     ExtensionContext.add('test', 'test');
-    return this.appService.getHello();
+    ExtensionContext.add('additionalExtension', 'additionalExtension');
+    const hello = this.appService.getHello();
+    return {
+      test: hello,
+    };
   }
+}
+
+type Test = {
+  test: string;
 }

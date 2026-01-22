@@ -3,11 +3,25 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RedisModule } from './global/redis/redis.module';
 import { ExtensionMiddleware } from '@global/extensions';
+import { RequestHook } from './global/guards/request/request.hook';
+import { DuplicateRequestGuard } from './global/guards/request/request.guard';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { WrapResponseInterceptor } from './global/interceptors/response/response.interceptor';
 
 @Module({
   imports: [RedisModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, 
+    RequestHook,
+    {
+      provide: APP_GUARD,
+      useClass: DuplicateRequestGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: WrapResponseInterceptor,
+    }
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
