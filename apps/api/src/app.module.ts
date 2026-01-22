@@ -9,6 +9,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { WrapResponseInterceptor } from './global/interceptors/response/response.interceptor';
 import { HttpExceptionFilter } from './global/error/exception.filter';
 import { RateLimitGuard } from './global/guards/request/rate.limit.guard';
+import { TimeoutInterceptor } from './global/interceptors/timeout/timeout.interceptor';
 
 @Module({
   imports: [RedisModule],
@@ -22,6 +23,10 @@ import { RateLimitGuard } from './global/guards/request/rate.limit.guard';
     {
       provide: APP_GUARD,
       useFactory: () => new RateLimitGuard(100, 60000),
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useFactory: () => new TimeoutInterceptor(30000),
     },
     {
       provide: APP_INTERCEPTOR,
