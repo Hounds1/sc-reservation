@@ -8,6 +8,7 @@ import { DuplicateRequestGuard } from './global/guards/request/request.guard';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { WrapResponseInterceptor } from './global/interceptors/response/response.interceptor';
 import { HttpExceptionFilter } from './global/error/exception.filter';
+import { RateLimitGuard } from './global/guards/request/rate.limit.guard';
 
 @Module({
   imports: [RedisModule],
@@ -17,6 +18,10 @@ import { HttpExceptionFilter } from './global/error/exception.filter';
     {
       provide: APP_GUARD,
       useClass: DuplicateRequestGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useFactory: () => new RateLimitGuard(100, 60000),
     },
     {
       provide: APP_INTERCEPTOR,
