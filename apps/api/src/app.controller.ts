@@ -8,8 +8,6 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<Test> {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
     ExtensionContext.add('test', 'test');
     ExtensionContext.add('additionalExtension', 'additionalExtension');
     const hello = this.appService.getHello();
