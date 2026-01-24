@@ -68,3 +68,12 @@ export function transformToSimpleResponse(account: Account): SimpleAccountRespon
         created_at: account.created_at,
     };
 }
+
+export function transformToDetailedResponse(account: Account): DetailedAccountResponse {
+    return {
+        ...transformToSimpleResponse(account),
+        updated_at: account.updated_at,
+        last_login_at: account.last_login_at,
+        email_verified_at: account.email_verified_at,
+    };
+}

@@ -1,5 +1,5 @@
 // API Response Types
-export interface ApiResponse<T> {
+export interface ContractedApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string | {
@@ -11,7 +11,7 @@ export interface ApiResponse<T> {
   extensions?: Record<string, any>;
 }
 
-export interface PaginatedResponse<T> {
+export interface ContractedPaginatedResponse<T> {
   success: boolean;
   data? : {
     items: T[];
@@ -23,20 +23,20 @@ export interface PaginatedResponse<T> {
   extensions?: Record<string, any>;
 }
 
-export function isApiResponse<T>(obj: unknown): obj is ApiResponse<T> {
+export function isApiResponse<T>(obj: unknown): obj is ContractedApiResponse<T> {
   return (
     typeof obj === 'object' &&
     obj !== null &&
     'success' in obj &&
-    typeof (obj as ApiResponse<T>).success === 'boolean'
+    typeof (obj as ContractedApiResponse<T>).success === 'boolean'
   );
 }
 
-export function isPaginatedResponse<T>(obj: unknown): obj is PaginatedResponse<T> {
+export function isPaginatedResponse<T>(obj: unknown): obj is ContractedPaginatedResponse<T> {
   return (
     typeof obj === 'object' &&
     obj !== null &&
     'success' in obj &&
-    typeof (obj as PaginatedResponse<T>).success === 'boolean'
+    typeof (obj as ContractedPaginatedResponse<T>).success === 'boolean'
   );
 }

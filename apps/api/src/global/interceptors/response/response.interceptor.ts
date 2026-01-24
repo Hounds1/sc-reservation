@@ -6,7 +6,7 @@ import {
   } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
-import { ApiResponse, isApiResponse, PaginatedResponse } from '@global/contracts';
+import { ContractedApiResponse, isApiResponse, ContractedPaginatedResponse } from '@global/contracts';
 import { ExtensionContext } from '@global/extensions';
 import { RequestHook } from 'src/global/guards/request/request.hook';
 import { DatetimeProvider } from 'src/global/providers/chrono/datetime.provider';
@@ -41,7 +41,7 @@ export class WrapResponseInterceptor implements NestInterceptor {
                 ...(result.extensions ?? {}),
               }  
             },
-          } satisfies ApiResponse<any>;
+          } satisfies ContractedApiResponse<any>;
         }
 
         if (Array.isArray(result)) {
@@ -67,7 +67,7 @@ export class WrapResponseInterceptor implements NestInterceptor {
                 ...ExtensionContext.getAll()
               }
             }
-          } satisfies PaginatedResponse<any>;
+          } satisfies ContractedPaginatedResponse<any>;
         } 
         
         return {
@@ -81,7 +81,7 @@ export class WrapResponseInterceptor implements NestInterceptor {
               ...ExtensionContext.getAll()
             }
           }
-        } satisfies ApiResponse<any>;
+        } satisfies ContractedApiResponse<any>;
       }),
       finalize(() => {
         if (requestId) {

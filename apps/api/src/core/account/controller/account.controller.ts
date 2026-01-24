@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { AccountService } from "../service/account.service";
 import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { CreateAccountRequest, PaginatedAccountSearchRequest } from "../domain/request/account.request";
-import { SimpleAccountResponse } from "../domain/response/account.response";
+import { DetailedAccountResponse, SimpleAccountResponse } from "../domain/response/account.response";
 
 @Controller('accounts')
 export class AccountController {
@@ -23,5 +23,12 @@ export class AccountController {
         @Query() request: PaginatedAccountSearchRequest
     ): Promise<SimpleAccountResponse[]> {
         return this.accountService.getAccounts(request);
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Get an account by id' })
+    @ApiResponse({ type: SimpleAccountResponse })
+    async getAccountById(@Param('id') id: number): Promise<DetailedAccountResponse> {
+        return this.accountService.getAccountById(id);
     }
 }
