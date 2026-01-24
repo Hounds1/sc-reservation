@@ -8,7 +8,17 @@ export class PrismaConnector extends PrismaClient implements OnModuleInit, OnMod
   private pool: Pool;
 
   constructor() {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const databaseUrl = process.env.DATABASE_URL;
+    
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+
+    if (typeof databaseUrl !== 'string') {
+      throw new Error('DATABASE_URL must be a string');
+    }
+
+    const pool = new Pool({ connectionString: databaseUrl });
     const adapter = new PrismaPg(pool);
     super({ adapter });
     this.pool = pool;

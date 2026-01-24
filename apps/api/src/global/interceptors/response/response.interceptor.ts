@@ -6,9 +6,10 @@ import {
   } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
-import { ApiResponse, isApiResponse } from '@global/contracts';
+import { ApiResponse, isApiResponse, PaginatedResponse } from '@global/contracts';
 import { ExtensionContext } from '@global/extensions';
 import { RequestHook } from 'src/global/guards/request/request.hook';
+import { DatetimeProvider } from 'src/global/providers/chrono/datetime.provider';
 
 @Injectable()
 export class WrapResponseInterceptor implements NestInterceptor {
@@ -19,9 +20,12 @@ export class WrapResponseInterceptor implements NestInterceptor {
     const http = context.switchToHttp();
     const req = http.getRequest<any>();
 
+    const page = parseInt(req.query?.page as string) || 1;
+    const limit = parseInt(req.query?.limit as string) || 10;
+
     const requestId = req.headers['x-request-id'] ?? null;
     const baseExtensions = {
-      timestamp: Math.floor(Date.now() / 1000),
+      timestamp: DatetimeProvider.now(),
       requestId: requestId,
     };
 
@@ -42,6 +46,30 @@ export class WrapResponseInterceptor implements NestInterceptor {
           } satisfies ApiResponse<any>;
         }
 
+        if (Array.isArray(result)) {
+          const total = result.length;
+          const totalPages = Math.ceil(total / limit);
+          
+          return {
+            success: true,
+            data: {
+              items: result,
+              total: total,
+              page: page,
+              limit: limit,
+              totalPages: totalPages,
+            },
+            extensions: { 
+              meta: {
+                ...baseExtensions
+              },
+              additional: {
+                ...ExtensionContext.getAll()
+              }
+            }
+          } satisfies PaginatedResponse<any>;
+        } 
+        
         return {
           success: true,
           data: result ?? null,

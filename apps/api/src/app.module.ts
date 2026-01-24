@@ -7,9 +7,22 @@ import { GuardsModule } from './global/guards/guards.module';
 import { InterceptorsModule } from './global/interceptors/interceptors.module';
 import { ExceptionModule } from './global/error/exception.module';
 import { PrismaConnectorModule } from './global/prisma/prisma.module';
+import { AccountModule } from './core/account/account.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [RedisModule, GuardsModule, InterceptorsModule, ExceptionModule, PrismaConnectorModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    })
+    , RedisModule
+    , GuardsModule
+    , InterceptorsModule
+    , ExceptionModule
+    , PrismaConnectorModule
+    , AccountModule
+  ],
   controllers: [AppController],
   providers: [AppService,
   ],
