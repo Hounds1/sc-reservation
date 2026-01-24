@@ -7,7 +7,7 @@ import {
     Logger,
   } from '@nestjs/common';
   import { Request, Response } from 'express';
-  import { ApiResponse } from '@global/contracts';
+  import { ContractedApiResponse } from '@global/contracts';
   
   @Catch()
   export class HttpExceptionFilter implements ExceptionFilter {
@@ -29,7 +29,7 @@ import {
           ? exception.getResponse()
           : 'Internal server error';
   
-      const errorResponse: ApiResponse<null> = {
+      const errorResponse: ContractedApiResponse<null> = {
         success: false,
         data: null,
         error: {
