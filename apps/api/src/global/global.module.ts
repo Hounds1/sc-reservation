@@ -14,5 +14,8 @@ import { InterceptorsModule } from "./interceptors/interceptors.module";
         ExceptionModule,
         PrismaConnectorModule,
     ],
+    exports: [
+        PrismaConnectorModule
+    ]
 })
 export class GlobalModule {}
