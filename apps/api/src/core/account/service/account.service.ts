@@ -1,8 +1,9 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { AccountRepository } from "../repository/account.repository";
 import { SimpleAccountResponse, transformToSimpleResponse } from "../domain/response/account.response";
-import { CreateAccountRequest } from "../domain/request/account.request";
+import { CreateAccountRequest, PaginatedAccountSearchRequest } from "../domain/request/account.request";
 import { hashPassword, transformToEntity } from "../domain/account";
+import { PaginationContext } from "src/global/pagination/ctx/pagination.context";
 
 @Injectable()
 export class AccountService {
@@ -18,5 +19,13 @@ export class AccountService {
         if (!result) throw new InternalServerErrorException('Failed to create account');
 
         return transformToSimpleResponse(result);
+    }
+
+    async getAccounts(request: PaginatedAccountSearchRequest): Promise<SimpleAccountResponse[]> {
+        const result = await this.accountRepository.getAccounts(request);
+        const count = await this.accountRepository.getAccountsCount();
+
+        PaginationContext.setTotal(count);
+        return result.map(transformToSimpleResponse);
     }
 }

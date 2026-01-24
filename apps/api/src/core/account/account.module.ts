@@ -1,9 +1,8 @@
 import { AccountRepository } from "./repository/account.repository";
-import { Global, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { AccountService } from "./service/account.service";
 import { AccountController } from "./controller/account.controller";
 
-@Global()   
 @Module({
     imports: [],
     controllers: [AccountController],
