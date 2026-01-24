@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ExtensionMiddleware } from '@global/extensions';
 import { ConfigModule } from '@nestjs/config';
-import { PaginationMiddleware } from './global/pagination/PaginationMiddleWare';
+import { PaginationMiddleware } from './global/pagination/pagination.middleware';
 import { GlobalModule } from './global/global.module';
 import { CoreModule } from './core/core.module';
 

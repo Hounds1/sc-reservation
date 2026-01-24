@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
-import { PaginationContext } from "./ctx/PaginationContext";
+import { PaginationContext } from "./ctx/pagination.context";
 
 @Injectable()
 export class PaginationMiddleware implements NestMiddleware {

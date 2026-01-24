@@ -3,7 +3,7 @@ import { AccountRepository } from "../repository/account.repository";
 import { SimpleAccountResponse, transformToSimpleResponse } from "../domain/response/account.response";
 import { CreateAccountRequest, PaginatedAccountSearchRequest } from "../domain/request/account.request";
 import { hashPassword, transformToEntity } from "../domain/account";
-import { PaginationContext } from "src/global/pagination/ctx/PaginationContext";
+import { PaginationContext } from "src/global/pagination/ctx/pagination.context";
 
 @Injectable()
 export class AccountService {
