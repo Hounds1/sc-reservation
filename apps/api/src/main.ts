@@ -8,7 +8,14 @@ async function bootstrap() {
   
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.set('trust proxy', true);
-   
+  
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'Access-Control-Allow-Origin', 'X-Request-Id'],
+    credentials: true,
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
