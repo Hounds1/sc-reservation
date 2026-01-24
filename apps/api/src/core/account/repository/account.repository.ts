@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
-import { Account } from "../domain/account";
+import { Account, mapPrismaAccountToAccount } from "../domain/account";
+import { PaginatedAccountSearchRequest } from "../domain/request/account.request";
 
 @Injectable()
 export class AccountRepository {
@@ -33,5 +34,20 @@ export class AccountRepository {
             last_login_at: result.last_login_at ? Number(result.last_login_at) : null,
             email_verified_at: result.email_verified_at ? Number(result.email_verified_at) : null,
         };
+    }
+    
+    async getAccounts(request: PaginatedAccountSearchRequest): Promise<Account[]> {
+        const result = await this.prismaConnector.accounts.findMany({
+            skip: (request.page - 1) * request.limit,
+            take: request.limit,
+            orderBy: {
+                created_at: 'desc',
+            },
+        });
+        return result.map(mapPrismaAccountToAccount);
+    }
+
+    async getAccountsCount(): Promise<number> {
+        return await this.prismaConnector.accounts.count();
     }
 }

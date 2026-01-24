@@ -35,3 +35,31 @@ export function transformToEntity(request: CreateAccountRequest): Account {
 export async function hashPassword(account: Account): Promise<void> {
     account.password = await bcrypt.hash(account.password, 10);
 }
+
+export function mapPrismaAccountToAccount(prismaAccount: {
+    account_id: bigint;
+    email: string;
+    password: string;
+    name: string;
+    display_name: string;
+    role: string;
+    status: string;
+    created_at: bigint;
+    updated_at: bigint | null;
+    last_login_at: bigint | null;
+    email_verified_at: bigint | null;
+  }): Account {
+    return {
+      account_id: Number(prismaAccount.account_id),
+      email: prismaAccount.email,
+      password: '',
+      name: prismaAccount.name,
+      display_name: prismaAccount.display_name,
+      role: prismaAccount.role,
+      status: prismaAccount.status,
+      created_at: Number(prismaAccount.created_at),
+      updated_at: prismaAccount.updated_at ? Number(prismaAccount.updated_at) : null,
+      last_login_at: prismaAccount.last_login_at ? Number(prismaAccount.last_login_at) : null,
+      email_verified_at: prismaAccount.email_verified_at ? Number(prismaAccount.email_verified_at) : null,
+    };
+  }

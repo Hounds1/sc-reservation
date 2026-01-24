@@ -1,14 +1,9 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { RedisModule } from './global/redis/redis.module';
 import { ExtensionMiddleware } from '@global/extensions';
-import { GuardsModule } from './global/guards/guards.module';
-import { InterceptorsModule } from './global/interceptors/interceptors.module';
-import { ExceptionModule } from './global/error/exception.module';
-import { PrismaConnectorModule } from './global/prisma/prisma.module';
-import { AccountModule } from './core/account/account.module';
 import { ConfigModule } from '@nestjs/config';
+import { PaginationMiddleware } from './global/pagination/PaginationMiddleWare';
+import { GlobalModule } from './global/global.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -16,19 +11,13 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '.env',
     })
-    , RedisModule
-    , GuardsModule
-    , InterceptorsModule
-    , ExceptionModule
-    , PrismaConnectorModule
-    , AccountModule
-  ],
-  controllers: [AppController],
-  providers: [AppService,
+    , GlobalModule
+    , CoreModule
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(ExtensionMiddleware).forRoutes('*');
+    consumer.apply(PaginationMiddleware).forRoutes('*');
   }
 }

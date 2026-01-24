@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
+import { PaginationParams } from "src/global/pagination/param/pagenation-params";
 
 export class CreateAccountRequest {
     @ApiProperty({
@@ -37,4 +38,8 @@ export class CreateAccountRequest {
     @MinLength(1, { message: 'Display name must be at least 3 characters long' })
     @MaxLength(30, { message: 'Display name must be less than 255 characters long' })
     display_name: string;
+}
+
+export class PaginatedAccountSearchRequest extends PaginationParams {
+    
 }
