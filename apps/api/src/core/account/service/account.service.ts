@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { AccountRepository } from "../repository/account.repository";
-import { SimpleAccountResponse, transformToSimpleResponse } from "../domain/response/account.response";
+import { DetailedAccountResponse, SimpleAccountResponse, transformToDetailedResponse, transformToSimpleResponse } from "../domain/response/account.response";
 import { CreateAccountRequest, PaginatedAccountSearchRequest } from "../domain/request/account.request";
 import { hashPassword, transformToEntity } from "../domain/account";
 import { PaginationContext } from "src/global/pagination/ctx/pagination.context";
@@ -27,5 +27,10 @@ export class AccountService {
 
         PaginationContext.setTotal(count);
         return result.map(transformToSimpleResponse);
+    }
+
+    async getAccountById(id: number): Promise<DetailedAccountResponse> {
+        const result = await this.accountRepository.getAccountById(id);
+        return transformToDetailedResponse(result);
     }
 }

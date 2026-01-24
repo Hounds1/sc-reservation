@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
 import { Account, mapPrismaAccountToAccount } from "../domain/account";
 import { PaginatedAccountSearchRequest } from "../domain/request/account.request";
@@ -49,5 +49,19 @@ export class AccountRepository {
 
     async getAccountsCount(): Promise<number> {
         return await this.prismaConnector.accounts.count();
+    }
+
+    async getAccountById(id: number): Promise<Account> {
+        const result = await this.prismaConnector.accounts.findUnique({
+            where: {
+                account_id: id,
+            },
+        });
+
+        if (!result) {
+            throw new NotFoundException('Account not found.');
+        }
+
+        return mapPrismaAccountToAccount(result);
     }
 }
