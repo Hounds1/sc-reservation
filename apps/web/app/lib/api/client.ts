@@ -16,11 +16,6 @@ const apiClient: AxiosInstance = axios.create({
 // 요청 인터셉터 (요청 전 처리)
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 필요시 토큰 추가 등
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
     return config;
   },
   (error: AxiosError) => {
@@ -33,7 +28,6 @@ apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  // ... existing code ...
   (error: AxiosError<ContractedApiResponse<unknown>>) => {
     // 에러 처리
     if (error.response) {
@@ -47,7 +41,6 @@ apiClient.interceptors.response.use(
       
       return Promise.reject(new Error(errorMessage));
     } else if (error.request) {
-// ... existing code ...
       return Promise.reject(new Error('서버에 연결할 수 없습니다.'));
     } else {
       return Promise.reject(error);

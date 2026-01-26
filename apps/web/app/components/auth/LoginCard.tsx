@@ -72,7 +72,7 @@ export function LoginCard({ onSuccess }: LoginCardProps) {
 
       <div className="mt-6 text-center">
         <span className="text-sm text-gray-500">Don't have an account? </span>
-        <Link href="/signup" className="text-sm font-semibold text-green-800 hover:underline">
+        <Link href="/sign-up" className="text-sm font-semibold text-green-800 hover:underline">
           Sign up
         </Link>
       </div>

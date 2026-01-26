@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { accountsApi } from '../../lib/api/account/accounts';
+import { createAccount } from '../../lib/api/account/accounts';
 
 export function SignupCard({ onSuccess }: { onSuccess?: () => void }) {
   const [name, setName] = useState('');
@@ -19,7 +19,7 @@ export function SignupCard({ onSuccess }: { onSuccess?: () => void }) {
     setError(null);
 
     try {
-      await accountsApi.createAccount({
+      await createAccount({
         name,
         email,
         password,
@@ -41,7 +41,7 @@ export function SignupCard({ onSuccess }: { onSuccess?: () => void }) {
       </div>
 
       <h1 className="text-2xl font-bold text-center text-black mb-2">
-        Create an account
+        회원가입
       </h1>
       <p className="text-sm text-center text-gray-500 mb-8">
         Start reserving your study spots today
@@ -49,7 +49,7 @@ export function SignupCard({ onSuccess }: { onSuccess?: () => void }) {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-black mb-2">Name</label>
+          <label htmlFor="name" className="block text-sm font-medium text-black mb-2">이름</label>
           <input
             id="name"
             type="text"
@@ -61,7 +61,7 @@ export function SignupCard({ onSuccess }: { onSuccess?: () => void }) {
         </div>
         <div>
           <label htmlFor="displayName" className="block text-sm font-medium text-black mb-2">
-            Display Name
+            닉네임
           </label>
           <input
             id="displayName"
@@ -84,7 +84,7 @@ export function SignupCard({ onSuccess }: { onSuccess?: () => void }) {
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-black mb-2">Password</label>
+          <label htmlFor="password" className="block text-sm font-medium text-black mb-2">비밀번호</label>
           <input
             id="password"
             type="password"
@@ -109,7 +109,7 @@ export function SignupCard({ onSuccess }: { onSuccess?: () => void }) {
           disabled={isLoading}
           className="w-full py-3 bg-green-800 text-white font-semibold rounded-md hover:bg-green-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? '처리 중...' : 'Sign up'}
+          {isLoading ? '처리 중...' : '가입하기'}
         </button>
       </form>
 
