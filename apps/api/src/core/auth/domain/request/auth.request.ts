@@ -18,3 +18,13 @@ export class AuthRequest {
     @IsString({ message: 'Password must be a string' })
     password: string;
 }
+
+export class ReissueRequest {
+    @ApiProperty({
+        description: 'The refresh token',
+        example: 'refresh-token',
+    })
+    @IsNotEmpty({ message: 'Refresh token is required' })
+    @IsString({ message: 'Refresh token must be a string' })
+    refreshToken: string;
+}

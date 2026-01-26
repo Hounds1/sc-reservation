@@ -13,7 +13,7 @@ export class JwtGuard extends AuthGuard('jwt') {
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
-        const requestId =request.headers['x-request-id']; 
+        const requestId = request.headers['x-request-id']; 
         
         /*
           토큰 검증을 하기 전에 public 엔드포인트 검증부터 해야합니다.
@@ -25,16 +25,20 @@ export class JwtGuard extends AuthGuard('jwt') {
         ]);
 
         if (isPublicEntrypoint) {
-            if (requestId) this.RequestHook.release(requestId);
+            this.releaseLockIfNecessary(requestId);
             return true;
         } 
         
         const token = request.headers.authorization?.split(' ')[1];
         if (!token) {
-            if (requestId) this.RequestHook.release(requestId);
+            this.releaseLockIfNecessary(requestId);
             throw new UnauthorizedException('No token provided');
         }
 
         return super.canActivate(context);
+    }
+
+    releaseLockIfNecessary(requestId: string) {
+        if (requestId) this.RequestHook.release(requestId);
     }
 }
