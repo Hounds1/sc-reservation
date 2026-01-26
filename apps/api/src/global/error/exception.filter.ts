@@ -19,7 +19,7 @@ import { RequestHook } from '../guards/request/request.hook';
       const ctx = host.switchToHttp();
       const response = ctx.getResponse<Response>();
       const request = ctx.getRequest<Request>();
-      const requestId = request.headers['x-request-id'] || 'N/A';
+      const requestId = request.headers['x-request-id'] as string || 'N/A';
   
       const status =
         exception instanceof HttpException
@@ -42,7 +42,7 @@ import { RequestHook } from '../guards/request/request.hook';
         extensions: {
           meta: {
             timestamp: Math.floor(Date.now() / 1000),
-            requestId: requestId as string,
+            requestId: requestId,
           },
           additional: {},
         },
@@ -54,7 +54,7 @@ import { RequestHook } from '../guards/request/request.hook';
       );
   
 
-      if (requestId) this.requestHook.release(requestId as string);
+      if (requestId) this.requestHook.release(requestId);
 
       response.status(status).json(errorResponse);
     }
