@@ -6,7 +6,7 @@ export class SimpleAccountResponse {
         description: 'The ID of the account',
         example: 1,
     })
-    account_id: number;
+    accountId: number;
     @ApiProperty({
         description: 'The email of the account',
         example: 'test@example.com',
@@ -21,7 +21,7 @@ export class SimpleAccountResponse {
         description: 'The display name of the account',
         example: 'John Doe',
     })
-    display_name: string;
+    displayName: string;
     @ApiProperty({
         description: 'The role of the account',
         example: 'USER',
@@ -36,7 +36,7 @@ export class SimpleAccountResponse {
         description: 'The creation date of the account',
         example: 1716796800,
     })
-    created_at: number;
+    createdAt: number;
 }
 
 export class DetailedAccountResponse extends SimpleAccountResponse {
@@ -44,36 +44,36 @@ export class DetailedAccountResponse extends SimpleAccountResponse {
         description: 'The update date of the account',
         example: 1716796800,
     })
-    updated_at: number | null;
+    updatedAt: number | null;
     @ApiProperty({
         description: 'The last login date of the account',
         example: 1716796800,
     })
-    last_login_at: number | null;
+    lastLoginAt: number | null;
     @ApiProperty({
         description: 'The email verified date of the account',
         example: 1716796800,
     })
-    email_verified_at: number | null;
+    emailVerifiedAt: number | null;
 }
 
 export function transformToSimpleResponse(account: Account): SimpleAccountResponse {
     return {
-        account_id: account.account_id,
+        accountId: account.accountId,
         email: account.email,
         name: account.name,
-        display_name: account.display_name,
+        displayName: account.displayName,
         role: account.role,
         status: account.status,
-        created_at: account.created_at,
+        createdAt: account.createdAt,
     };
 }
 
 export function transformToDetailedResponse(account: Account): DetailedAccountResponse {
     return {
         ...transformToSimpleResponse(account),
-        updated_at: account.updated_at,
-        last_login_at: account.last_login_at,
-        email_verified_at: account.email_verified_at,
+        updatedAt: account.updatedAt,
+        lastLoginAt: account.lastLoginAt,
+        emailVerifiedAt: account.emailVerifiedAt,
     };
 }

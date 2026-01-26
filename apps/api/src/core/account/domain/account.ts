@@ -3,32 +3,32 @@ import { CreateAccountRequest } from "./request/account.request";
 import * as bcrypt from 'bcrypt';
 
 export class Account {
-    account_id: number;
+    accountId: number;
     email: string;
     password: string;
     name: string;
-    display_name: string;
+    displayName: string;
     role: string;
     status: string;
-    created_at: number;
-    updated_at: number | null;
-    last_login_at: number | null;
-    email_verified_at: number | null;
+    createdAt: number;
+    updatedAt: number | null;
+    lastLoginAt: number | null;
+    emailVerifiedAt: number | null;
 }
 
 export function transformToEntity(request: CreateAccountRequest): Account {
     return {
-        account_id: null,
+        accountId: null,
         email: request.email,
         password: request.password,
         name: request.name,
-        display_name: request.display_name,
+        displayName: request.displayName,
         role: 'USER',
         status: 'ACTIVE',
-        created_at: DatetimeProvider.now(),
-        updated_at: null,
-        last_login_at: null,
-        email_verified_at: null,
+        createdAt: DatetimeProvider.now(),
+        updatedAt: null,
+        lastLoginAt: null,
+        emailVerifiedAt: null,
     }
 }
 
@@ -50,16 +50,16 @@ export function mapPrismaAccountToAccount(prismaAccount: {
     email_verified_at: bigint | null;
   }): Account {
     return {
-      account_id: Number(prismaAccount.account_id),
+      accountId: Number(prismaAccount.account_id),
       email: prismaAccount.email,
-      password: '',
+      password:prismaAccount.password,
       name: prismaAccount.name,
-      display_name: prismaAccount.display_name,
+      displayName: prismaAccount.display_name,
       role: prismaAccount.role,
       status: prismaAccount.status,
-      created_at: Number(prismaAccount.created_at),
-      updated_at: prismaAccount.updated_at ? Number(prismaAccount.updated_at) : null,
-      last_login_at: prismaAccount.last_login_at ? Number(prismaAccount.last_login_at) : null,
-      email_verified_at: prismaAccount.email_verified_at ? Number(prismaAccount.email_verified_at) : null,
+      createdAt: Number(prismaAccount.created_at),
+      updatedAt: prismaAccount.updated_at ? Number(prismaAccount.updated_at) : null,
+      lastLoginAt: prismaAccount.last_login_at ? Number(prismaAccount.last_login_at) : null,
+      emailVerifiedAt: prismaAccount.email_verified_at ? Number(prismaAccount.email_verified_at) : null,
     };
   }

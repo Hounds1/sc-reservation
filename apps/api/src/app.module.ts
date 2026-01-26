@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ExtensionMiddleware } from '@global/extensions';
 import { ConfigModule } from '@nestjs/config';
 import { PaginationMiddleware } from './global/pagination/pagination.middleware';
@@ -17,7 +17,7 @@ import { CoreModule } from './core/core.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ExtensionMiddleware).forRoutes('*');
-    consumer.apply(PaginationMiddleware).forRoutes('*');
+    consumer.apply(ExtensionMiddleware).forRoutes({path: '*path', method: RequestMethod.ALL});
+    consumer.apply(PaginationMiddleware).forRoutes({path: '*path', method: RequestMethod.ALL});
   }
 }

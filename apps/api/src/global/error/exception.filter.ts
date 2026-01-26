@@ -6,12 +6,14 @@ import {
     HttpStatus,
     Logger,
   } from '@nestjs/common';
-  import { Request, Response } from 'express';
-  import { ContractedApiResponse } from '@global/contracts';
+import { request, Request, Response } from 'express';
+import { ContractedApiResponse } from '@global/contracts';
+import { RequestHook } from '../guards/request/request.hook';
   
   @Catch()
   export class HttpExceptionFilter implements ExceptionFilter {
     private readonly logger = new Logger(HttpExceptionFilter.name);
+    constructor(private readonly requestHook: RequestHook) {}
   
     catch(exception: unknown, host: ArgumentsHost) {
       const ctx = host.switchToHttp();
@@ -51,6 +53,9 @@ import {
         exception instanceof Error ? exception.stack : undefined,
       );
   
+
+      if (requestId) this.requestHook.release(requestId as string);
+
       response.status(status).json(errorResponse);
     }
   }
