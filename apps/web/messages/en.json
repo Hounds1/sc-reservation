@@ -1,0 +1,33 @@
+{
+    "auth": {
+      "login": {
+        "title": "Welcome back",
+        "subtitle": "Sign in to your account to continue",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "emailPlaceholder": "you@example.com",
+        "passwordPlaceholder": "Enter your password",
+        "submitButton": "Sign in",
+        "noAccount": "Don't have an account?",
+        "signUpLink": "Sign up"
+      },
+      "signup": {
+        "title": "Sign up",
+        "subtitle": "Start reserving your study spots today",
+        "nameLabel": "Name",
+        "displayNameLabel": "Display Name",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "namePlaceholder": "Your name",
+        "displayNamePlaceholder": "Your display name",
+        "emailPlaceholder": "you@example.com",
+        "passwordPlaceholder": "Create a password",
+        "passwordHint": "Must be at least 4 characters.",
+        "submitButton": "Sign up",
+        "loadingButton": "Processing...",
+        "hasAccount": "Already have an account?",
+        "signInLink": "Sign in",
+        "errorMessage": "An error occurred during sign up."
+      }
+    }
+  }
