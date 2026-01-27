@@ -4,15 +4,17 @@ import { ApiBody, ApiOperation } from "@nestjs/swagger";
 import { CreateAccountRequest, PaginatedAccountSearchRequest } from "../domain/request/account.request";
 import { DetailedAccountResponse, SimpleAccountResponse } from "../domain/response/account.response";
 import { ApiWrappedPaginatedResponse, ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
+import { PublicEntrypoint } from "src/core/auth/decorators/public.entrypoint";
 
 @Controller('accounts')
 export class AccountController {
     constructor(private readonly accountService: AccountService) {}
 
-    @Post()
+    @Post('public/join')
     @ApiOperation({ summary: 'Create a new account' })
     @ApiBody({ type: CreateAccountRequest })
     @ApiWrappedResponse(SimpleAccountResponse)
+    @PublicEntrypoint()
     async createAccount(@Body() request: CreateAccountRequest): Promise<SimpleAccountResponse> {
         return this.accountService.createAccount(request);
     }

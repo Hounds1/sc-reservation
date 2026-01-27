@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
 import { Account, mapPrismaAccountToAccount } from "../domain/account";
 import { PaginatedAccountSearchRequest } from "../domain/request/account.request";
+import { transformToInternalAccountDelivery } from "../domain/internal/account.internal.delivery";
 
 @Injectable()
 export class AccountRepository {
@@ -13,27 +14,15 @@ export class AccountRepository {
             data: {
                 name: account.name,
                 email: account.email,
-                display_name: account.display_name,
+                display_name: account.displayName,
                 password: account.password,
                 role: account.role,
                 status: account.status,
-                created_at: account.created_at,
+                created_at: account.createdAt,
             },
         });
         
-        return {
-            account_id: Number(result.account_id),
-            email: result.email,
-            password: result.password,
-            name: result.name,
-            display_name: result.display_name,
-            role: result.role,
-            status: result.status,
-            created_at: Number(result.created_at),
-            updated_at: result.updated_at ? Number(result.updated_at) : null,
-            last_login_at: result.last_login_at ? Number(result.last_login_at) : null,
-            email_verified_at: result.email_verified_at ? Number(result.email_verified_at) : null,
-        };
+        return mapPrismaAccountToAccount(result);
     }
     
     async getAccounts(request: PaginatedAccountSearchRequest): Promise<Account[]> {
@@ -58,9 +47,19 @@ export class AccountRepository {
             },
         });
 
-        if (!result) {
-            throw new NotFoundException('Account not found.');
-        }
+        if (!result) throw new NotFoundException('Account not found.');
+
+        return mapPrismaAccountToAccount(result);
+    }
+
+    async getAccountWithPasswordByEmail(email: string): Promise<Account> {
+        const result = await this.prismaConnector.accounts.findUnique({
+            where: {
+                email: email,
+            }
+        });
+
+        if (!result) throw new NotFoundException('Account not found.');
 
         return mapPrismaAccountToAccount(result);
     }

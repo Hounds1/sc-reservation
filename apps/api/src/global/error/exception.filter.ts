@@ -6,18 +6,20 @@ import {
     HttpStatus,
     Logger,
   } from '@nestjs/common';
-  import { Request, Response } from 'express';
-  import { ContractedApiResponse } from '@global/contracts';
+import { request, Request, Response } from 'express';
+import { ContractedApiResponse } from '@global/contracts';
+import { RequestHook } from '../guards/request/request.hook';
   
   @Catch()
   export class HttpExceptionFilter implements ExceptionFilter {
     private readonly logger = new Logger(HttpExceptionFilter.name);
+    constructor(private readonly requestHook: RequestHook) {}
   
     catch(exception: unknown, host: ArgumentsHost) {
       const ctx = host.switchToHttp();
       const response = ctx.getResponse<Response>();
       const request = ctx.getRequest<Request>();
-      const requestId = request.headers['x-request-id'] || 'N/A';
+      const requestId = request.headers['x-request-id'] as string || 'N/A';
   
       const status =
         exception instanceof HttpException
@@ -40,7 +42,7 @@ import {
         extensions: {
           meta: {
             timestamp: Math.floor(Date.now() / 1000),
-            requestId: requestId as string,
+            requestId: requestId,
           },
           additional: {},
         },
@@ -51,6 +53,9 @@ import {
         exception instanceof Error ? exception.stack : undefined,
       );
   
+
+      if (requestId) this.requestHook.release(requestId);
+
       response.status(status).json(errorResponse);
     }
   }

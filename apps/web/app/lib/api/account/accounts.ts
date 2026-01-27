@@ -6,7 +6,7 @@ import apiClient from "../client";
 
 export async function createAccount(data: CreateAccountRequest): Promise<SimpleAccountResponse> {
   const response = await apiClient.post<ContractedApiResponse<SimpleAccountResponse>>(
-    '/accounts',
+    '/api/v1/accounts/public/join',
     data
   );
 

@@ -24,6 +24,8 @@ async function bootstrap() {
     })
   )
 
+  app.setGlobalPrefix('api/v1');
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SC Reservation API')
     .setDescription('예약 시스템 API 문서')

@@ -37,7 +37,7 @@ export class CreateAccountRequest {
     @IsString({ message: 'Display name must be a string' })
     @MinLength(1, { message: 'Display name must be at least 3 characters long' })
     @MaxLength(30, { message: 'Display name must be less than 255 characters long' })
-    display_name: string;
+    displayName: string;
 }
 
 export class PaginatedAccountSearchRequest extends PaginationParams {
