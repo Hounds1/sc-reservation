@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { AccountInternalService } from "src/core/account/service/account.internal.service";
+import { InternalAccountService } from "src/core/account/service/internal.account.service";
 import { AuthRequest, ReissueRequest } from "../domain/request/auth.request";
 import { AuthResponse } from "../domain/response/auth.response";
 import * as bcrypt from 'bcrypt';
@@ -18,7 +18,7 @@ type RefreshPayload = {
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly accountInternalService: AccountInternalService, private readonly jwtService: JwtService) {}
+    constructor(private readonly internalAccountService: InternalAccountService, private readonly jwtService: JwtService) {}
 
     private readonly expiresIn: number = Number(process.env.JWT_EXPIRES_IN ?? 900);
     private readonly refreshExpiresIn: number = Number(process.env.JWT_REFRESH_EXPIRES_IN ?? 604800);
@@ -75,7 +75,7 @@ export class AuthService {
     }
 
     async validateAndGetAccount(email: string, password: string): Promise<InternalAccountDelivery> {
-        const account = await this.accountInternalService.internalAccountDelivery(email);
+        const account = await this.internalAccountService.internalAccountDelivery(email);
         
         const isPasswordValid = await bcrypt.compare(password, account.password);
 
