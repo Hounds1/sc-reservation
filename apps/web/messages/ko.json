@@ -9,7 +9,8 @@
         "passwordPlaceholder": "비밀번호를 입력하세요",
         "submitButton": "로그인",
         "noAccount": "계정이 없으신가요?",
-        "signUpLink": "회원가입"
+        "signUpLink": "회원가입",
+        "errorMessage": "로그인 실패"
       },
       "signup": {
         "title": "회원가입",
