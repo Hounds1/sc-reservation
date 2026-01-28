@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/com
 import { AuthGuard } from "@nestjs/passport";
 import { Reflector } from '@nestjs/core';
 import { Observable } from "rxjs";
-import { IS_PUBLIC_ENTRYPOINT } from "../../decorators/public.entrypoint";
+import { IS_PUBLIC_ENTRYPOINT } from "../../../core/auth/decorators/public.entrypoint";
 import { RequestHook } from "src/global/guards/request/request.hook";
 
 @Injectable()

@@ -25,3 +25,23 @@ export class AuthResponse {
     })
     refreshTokenExpiresAt: number;
 }
+
+export class ContainedSession {
+    @ApiProperty({
+        description: 'Session Id',
+        example: 'uuid',
+    })
+    sessionId: string;
+
+    @ApiProperty({
+        description: 'Session Created At',
+        example: 1716796800,
+    })
+    sessionCreatedAt: number;
+
+    @ApiProperty({
+        description: 'Session Expires At',
+        example: 1716796800,
+    })
+    sessionExpiresAt: number;
+}

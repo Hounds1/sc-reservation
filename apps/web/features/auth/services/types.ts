@@ -3,9 +3,8 @@ export type AuthRequest = {
     password: string;
 }
 
-export type AuthResponse = {
-    accessToken: string;
-    refreshToken: string;
-    accessTokenExpiresAt: number;
-    refreshTokenExpiresAt: number;
+export type SessionResponse = {
+    sessionId: string;
+    sessionCreatedAt: number;
+    sessionExpiresAt: number;
 }
