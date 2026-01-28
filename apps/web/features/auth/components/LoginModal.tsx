@@ -1,7 +1,7 @@
 'use client';
 
-import { Modal } from '../ui/AuthModal';
-import { LoginCard } from './LoginCard';
+import { Modal } from '../../../components/ui/AuthModal';
+import { LoginForm } from './LoginForm';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface LoginModalProps {
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <LoginCard onSuccess={onClose} />
+      <LoginForm onSuccess={onClose} />
     </Modal>
   );
 }

@@ -2,7 +2,7 @@
 
 import { ContractedApiResponse } from "@global/contracts";
 import { CreateAccountRequest, SimpleAccountResponse } from "./types";
-import apiClient from "../client";
+import apiClient from "../../../src/lib/api/client";
 
 export async function createAccount(data: CreateAccountRequest): Promise<SimpleAccountResponse> {
   const response = await apiClient.post<ContractedApiResponse<SimpleAccountResponse>>(

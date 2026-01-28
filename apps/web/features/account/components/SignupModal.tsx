@@ -1,7 +1,7 @@
 'use client';
 
-import { Modal } from '../ui/AuthModal';
-import { SignupCard } from './SignupCard';
+import { Modal } from '../../../components/ui/AuthModal';
+import { SignupForm } from './SignupForm';
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -11,7 +11,7 @@ interface SignupModalProps {
 export function SignupModal({ isOpen, onClose }: SignupModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <SignupCard onSuccess={onClose} />
+      <SignupForm onSuccess={onClose} />
     </Modal>
   );
 }

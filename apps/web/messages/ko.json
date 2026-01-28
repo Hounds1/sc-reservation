@@ -1,0 +1,33 @@
+{
+    "auth": {
+      "login": {
+        "title": "다시 오신 것을 환영합니다",
+        "subtitle": "계속하려면 계정에 로그인하세요",
+        "emailLabel": "이메일",
+        "passwordLabel": "비밀번호",
+        "emailPlaceholder": "you@example.com",
+        "passwordPlaceholder": "비밀번호를 입력하세요",
+        "submitButton": "로그인",
+        "noAccount": "계정이 없으신가요?",
+        "signUpLink": "회원가입"
+      },
+      "signup": {
+        "title": "회원가입",
+        "subtitle": "오늘부터 스터디 공간을 예약하세요",
+        "nameLabel": "이름",
+        "displayNameLabel": "닉네임",
+        "emailLabel": "이메일",
+        "passwordLabel": "비밀번호",
+        "namePlaceholder": "이름을 입력하세요",
+        "displayNamePlaceholder": "닉네임을 입력하세요",
+        "emailPlaceholder": "you@example.com",
+        "passwordPlaceholder": "비밀번호를 만드세요",
+        "passwordHint": "최소 4자 이상이어야 합니다.",
+        "submitButton": "가입하기",
+        "loadingButton": "처리 중...",
+        "hasAccount": "이미 계정이 있으신가요?",
+        "signInLink": "로그인",
+        "errorMessage": "회원가입 중 오류가 발생했습니다."
+      }
+    }
+  }
