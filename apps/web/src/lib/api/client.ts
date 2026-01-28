@@ -1,9 +1,9 @@
-// apps/web/lib/api/client.ts
+import { cookies } from 'next/headers';
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ContractedApiResponse } from '@global/contracts';
 
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const ACCESS_TOKEN_COOKIE = 'accessToken';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -13,9 +13,16 @@ const apiClient: AxiosInstance = axios.create({
   timeout: 10000,
 });
 
-// 요청 인터셉터 (요청 전 처리)
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  async (config: InternalAxiosRequestConfig) => {
+    try {
+      const cookieStore = await cookies();
+      const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch {
+    }
     return config;
   },
   (error: AxiosError) => {
@@ -23,15 +30,12 @@ apiClient.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터 (응답 후 처리)
 apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
   (error: AxiosError<ContractedApiResponse<unknown>>) => {
-    // 에러 처리
     if (error.response) {
-      // 서버에서 응답이 온 경우
       const errorData = error.response.data?.error;
       const errorMessage = 
         (typeof errorData === 'object' && errorData !== null ? errorData.message : errorData) ||

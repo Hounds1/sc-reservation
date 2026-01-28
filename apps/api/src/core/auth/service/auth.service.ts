@@ -45,6 +45,7 @@ export class AuthService {
                 secret: this.refreshKey });
 
         const now = DatetimeProvider.now();
+
         return {
             accessToken: accessToken,
             refreshToken: refreshToken,

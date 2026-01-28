@@ -9,7 +9,8 @@
         "passwordPlaceholder": "Enter your password",
         "submitButton": "Sign in",
         "noAccount": "Don't have an account?",
-        "signUpLink": "Sign up"
+        "signUpLink": "Sign up",
+        "errorMessage": "Login failed"
       },
       "signup": {
         "title": "Sign up",
