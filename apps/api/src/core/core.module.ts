@@ -6,6 +6,9 @@ import { AuthModule } from "./auth/auth.module";
     imports: [
         AccountModule,
         AuthModule,
+    ],
+    exports: [
+        AuthModule,
     ]
 })
 export class CoreModule {}
