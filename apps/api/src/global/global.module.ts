@@ -4,6 +4,8 @@ import { PrismaConnectorModule } from "./prisma/prisma.module";
 import { RedisModule } from "./redis/redis.module";
 import { GuardsModule } from "./guards/guards.module";
 import { InterceptorsModule } from "./interceptors/interceptors.module";
+import { JwtGlobalModule } from "./jwt/jwt.module";
+import { AccessEnsureModule } from "./jwt/ensure.module";
 
 @Global()
 @Module({
@@ -13,6 +15,8 @@ import { InterceptorsModule } from "./interceptors/interceptors.module";
         InterceptorsModule,
         ExceptionModule,
         PrismaConnectorModule,
+        JwtGlobalModule,
+        AccessEnsureModule
     ],
     exports: [
         PrismaConnectorModule

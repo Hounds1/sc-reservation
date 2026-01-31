@@ -3,7 +3,7 @@ import { AuthService } from "../service/auth.service";
 import { AuthRequest, ReissueRequest } from "../domain/request/auth.request";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
-import { AuthResponse } from "../domain/response/auth.response";
+import { ContainedSession } from "../domain/response/auth.response";
 import { PublicEntrypoint } from "../decorators/public.entrypoint";
 
 @Controller()
@@ -14,18 +14,18 @@ export class AuthController {
     @Post('public/auth')
     @ApiOperation({ summary: '로그인' })
     @ApiBody({ type: AuthRequest })
-    @ApiWrappedResponse(AuthResponse)
+    @ApiWrappedResponse(ContainedSession)
     @PublicEntrypoint()
-    async login(@Body() request: AuthRequest): Promise<AuthResponse> {
+    async login(@Body() request: AuthRequest): Promise<ContainedSession> {
         return this.authService.auth(request);
     }
 
     @Post('public/reissue')
     @ApiOperation({ summary: '토큰 재발급' })
     @ApiBody({ type: ReissueRequest })
-    @ApiWrappedResponse(AuthResponse)
+    @ApiWrappedResponse(ContainedSession)
     @PublicEntrypoint()
-    async reissue(@Body() request: ReissueRequest): Promise<AuthResponse> {
+    async reissue(@Body() request: ReissueRequest): Promise<ContainedSession> {
         return this.authService.reissue(request);
     }
 }

@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers';
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ContractedApiResponse } from '@global/contracts';
+import { SESSION_COOKIE_NAME } from '@global/contracts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-const ACCESS_TOKEN_COOKIE = 'accessToken';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -17,9 +17,9 @@ apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
       const cookieStore = await cookies();
-      const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      const sessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+      if (sessionId) {
+        config.headers[SESSION_COOKIE_NAME] = sessionId;
       }
     } catch {
     }
