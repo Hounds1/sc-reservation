@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UnauthorizedException } from "@nestjs/common";
 import { AccountService } from "../service/account.service";
 import { ApiBody, ApiOperation } from "@nestjs/swagger";
 import { CreateAccountRequest, PaginatedAccountSearchRequest } from "../domain/request/account.request";
 import { DetailedAccountResponse, SimpleAccountResponse } from "../domain/response/account.response";
 import { ApiWrappedPaginatedResponse, ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
 import { PublicEntrypoint } from "src/core/auth/decorators/public.entrypoint";
+import { TenantInjection } from "src/global/jwt/decorators/tenant.injection.decorator";
+import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
 
 @Controller('accounts')
 export class AccountController {
@@ -26,6 +28,13 @@ export class AccountController {
         @Query() request: PaginatedAccountSearchRequest
     ): Promise<SimpleAccountResponse[]> {
         return this.accountService.getAccounts(request);
+    }
+
+    @Get('me')
+    @ApiOperation({ summary: 'Get the current account' })
+    @ApiWrappedResponse(DetailedAccountResponse)
+    async me(@TenantInjection() tenant: jwtPayload) : Promise<DetailedAccountResponse> {
+        return this.accountService.getAccountById(tenant.accountId);
     }
 
     @Get(':id')

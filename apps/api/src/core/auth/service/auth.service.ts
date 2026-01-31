@@ -33,6 +33,14 @@ export class AuthService {
     async auth(request: AuthRequest): Promise<ContainedSession> {
         const accountMeta = await this.validateAndGetAccount(request.email, request.password);
 
+        const accountSessionKey = `account:${accountMeta.accountId}:session`;
+        const existingSessions = await this.redisTemplate.smembers(accountSessionKey);
+
+        for (const oldSessionId of existingSessions) {
+            await this.redisTemplate.del(oldSessionId);
+        }
+        await this.redisTemplate.del(accountSessionKey);
+
         const payload = {
             accountId: accountMeta.accountId,
             email: accountMeta.email,
@@ -62,6 +70,10 @@ export class AuthService {
 
         this.redisTemplate.set(sessionId, JSON.stringify(actual), this.refreshExpiresIn);
 
+
+        await this.redisTemplate.sadd(accountSessionKey, sessionId);
+        await this.redisTemplate.expire(accountSessionKey, this.refreshExpiresIn);
+        
         return {
             sessionId: sessionId,
             sessionCreatedAt: now,
@@ -147,7 +159,7 @@ export class AuthService {
         return account;
     }
 
-    async isExpired(exp: number): Promise<boolean> {
+    isExpired(exp: number): boolean {
         const now = DatetimeProvider.now();
         return now >= exp;
     }
