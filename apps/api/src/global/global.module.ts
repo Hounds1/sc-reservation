@@ -6,6 +6,7 @@ import { GuardsModule } from "./guards/guards.module";
 import { InterceptorsModule } from "./interceptors/interceptors.module";
 import { JwtGlobalModule } from "./jwt/jwt.module";
 import { AccessEnsureModule } from "./jwt/ensure.module";
+import { SessionModule } from "./session/session.module";
 
 @Global()
 @Module({
@@ -16,7 +17,8 @@ import { AccessEnsureModule } from "./jwt/ensure.module";
         ExceptionModule,
         PrismaConnectorModule,
         JwtGlobalModule,
-        AccessEnsureModule
+        AccessEnsureModule,
+        SessionModule
     ],
     exports: [
         PrismaConnectorModule

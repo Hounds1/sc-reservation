@@ -7,6 +7,7 @@ import { ContainedSession } from "../domain/response/auth.response";
 import { PublicEntrypoint } from "../decorators/public.entrypoint";
 import { TenantInjection } from "src/global/jwt/decorators/tenant.injection.decorator";
 import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
+import { RetrieveSession } from "src/global/jwt/decorators/session.retrieve.decorator";
 
 @Controller('auth')
 @ApiTags('로그인')
@@ -26,15 +27,14 @@ export class AuthController {
     @ApiOperation({ summary: '토큰 재발급' })
     @ApiBody({ type: ReissueRequest })
     @ApiWrappedResponse(ContainedSession)
-    @PublicEntrypoint()
-    async reissue(@Body() request: ReissueRequest): Promise<ContainedSession> {
-        return this.authService.reissue(request);
+    async reissue(@Body() request: ReissueRequest, @RetrieveSession() sessionId: string): Promise<ContainedSession> {
+        return this.authService.reissue(request, sessionId);
     }
 
     @Delete('invalidate')
     @ApiOperation({ summary: '로그아웃' })
     @ApiWrappedVoidResponse()  
-    async logout(@TenantInjection() tenant: jwtPayload): Promise<void> {
-        return this.authService.invalidateSession(tenant);
+    async logout(@TenantInjection() tenant: jwtPayload, @RetrieveSession() sessionId: string): Promise<void> {
+        return this.authService.invalidateSession(tenant.accountId, sessionId);
     }
 }

@@ -5,6 +5,7 @@ import { JwtGuard } from "./guards/jwt.guard";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { AccountModule } from "src/core/account/account.module";
+import { JwtPolicyProvider } from "./policy/jwt.policy.provider";
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { AccountModule } from "src/core/account/account.module";
             provide: APP_GUARD,
             useClass: JwtGuard,
         },
+        JwtPolicyProvider,
     ],
     exports: [
         JwtModule
