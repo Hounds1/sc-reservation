@@ -63,6 +63,22 @@ export class RedisTemplate implements OnModuleInit, OnModuleDestroy {
     return this.client.expire(key, seconds);
   }
 
+  async sadd(key: string, ...members: string[]): Promise<number> {
+    return this.client.sadd(key, ...members);
+  }
+
+  async smembers(key: string): Promise<string[]> {
+      return this.client.smembers(key);
+  }
+
+  async srem(key: string, ...members: string[]): Promise<number> {
+      return this.client.srem(key, ...members);
+  }
+
+  async sismember(key: string, member: string): Promise<number> {
+      return this.client.sismember(key, member);
+  }
+
   private async evalsha<T = unknown>(
     sha: string,
     keys: string[],

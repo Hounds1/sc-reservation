@@ -33,6 +33,12 @@ export function ApiWrappedResponse<T>(dataType: Type<T>) {
     );
   }
 
+export function ApiWrappedVoidResponse() {
+  return applyDecorators(
+    ApiResponse({ schema: { type: 'object', properties: { success: { type: 'boolean', example: true } } } })
+  );
+}
+
 export function ApiWrappedPaginatedResponse<T>(itemType: Type<T>) {
   return applyDecorators(
     ApiExtraModels(itemType),

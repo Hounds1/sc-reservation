@@ -1,17 +1,19 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Post } from "@nestjs/common";
 import { AuthService } from "../service/auth.service";
 import { AuthRequest, ReissueRequest } from "../domain/request/auth.request";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
+import { ApiWrappedResponse, ApiWrappedVoidResponse } from "src/global/swagger/wrapped.response.decorator";
 import { ContainedSession } from "../domain/response/auth.response";
 import { PublicEntrypoint } from "../decorators/public.entrypoint";
+import { TenantInjection } from "src/global/jwt/decorators/tenant.injection.decorator";
+import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
 
-@Controller()
+@Controller('auth')
 @ApiTags('로그인')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    @Post('public/auth')
+    @Post('public/login')
     @ApiOperation({ summary: '로그인' })
     @ApiBody({ type: AuthRequest })
     @ApiWrappedResponse(ContainedSession)
@@ -27,5 +29,12 @@ export class AuthController {
     @PublicEntrypoint()
     async reissue(@Body() request: ReissueRequest): Promise<ContainedSession> {
         return this.authService.reissue(request);
+    }
+
+    @Delete('invalidate')
+    @ApiOperation({ summary: '로그아웃' })
+    @ApiWrappedVoidResponse()  
+    async logout(@TenantInjection() tenant: jwtPayload): Promise<void> {
+        return this.authService.invalidateSession(tenant);
     }
 }
