@@ -9,6 +9,9 @@ import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider"
 import { RedisTemplate } from "src/global/redis/redis.template";
 import { randomUUID } from "crypto";
 import { EnsuredSessionDelivery, InternalSessionDelivery } from "../domain/element/auth.element";
+import { SessionKeyBuilder } from "../units/session.key.builder";
+import { CreateSessionScript } from "../units/session.script";
+import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
 
 type RefreshPayload = {
     accountId: number;
@@ -33,13 +36,8 @@ export class AuthService {
     async auth(request: AuthRequest): Promise<ContainedSession> {
         const accountMeta = await this.validateAndGetAccount(request.email, request.password);
 
-        const accountSessionKey = `account:${accountMeta.accountId}:session`;
-        const existingSessions = await this.redisTemplate.smembers(accountSessionKey);
-
-        for (const oldSessionId of existingSessions) {
-            await this.redisTemplate.del(oldSessionId);
-        }
-        await this.redisTemplate.del(accountSessionKey);
+        const accountSessionKey = SessionKeyBuilder.build(accountMeta.accountId);
+        await this.chaseAndInvalidateAllSession(accountSessionKey);
 
         const payload = {
             accountId: accountMeta.accountId,
@@ -68,11 +66,11 @@ export class AuthService {
 
         const sessionId = randomUUID();
 
-        this.redisTemplate.set(sessionId, JSON.stringify(actual), this.refreshExpiresIn);
-
-
-        await this.redisTemplate.sadd(accountSessionKey, sessionId);
-        await this.redisTemplate.expire(accountSessionKey, this.refreshExpiresIn);
+        await this.redisTemplate.execute(
+            CreateSessionScript,
+            [sessionId, accountSessionKey],
+            [JSON.stringify(actual), this.refreshExpiresIn]
+        );
         
         return {
             sessionId: sessionId,
@@ -94,21 +92,29 @@ export class AuthService {
             { expiresIn: this.expiresIn, 
                 secret: this.accessKey });
 
+        const now = DatetimeProvider.now();
+        const refreshExpiresIn = Math.abs(payload.exp - now);
         const refreshToken = await this.jwtService.signAsync(payloadForSign, 
-            { expiresIn: this.refreshExpiresIn,
+            { expiresIn: refreshExpiresIn,
                 secret: this.refreshKey });
 
-
-        const now = DatetimeProvider.now();
         const actual = {
             accessToken: accessToken,
             refreshToken: refreshToken,
             accessTokenExpiresAt: now + this.expiresIn,
-            refreshTokenExpiresAt: now + this.refreshExpiresIn,
+            refreshTokenExpiresAt: now + refreshExpiresIn,
         }
 
+        const sessionKey = SessionKeyBuilder.build(payload.accountId);
+        await this.chaseAndInvalidateAllSession(sessionKey);
+
+        
         const sessionId = randomUUID();
-        this.redisTemplate.set(sessionId, JSON.stringify(actual), this.refreshExpiresIn);
+        await this.redisTemplate.execute(
+            CreateSessionScript,
+            [sessionId, sessionKey],
+            [JSON.stringify(actual), this.refreshExpiresIn]
+        );
 
         return {
             sessionId: sessionId,
@@ -150,6 +156,12 @@ export class AuthService {
         }
     }
 
+    // 로그아웃 (전체 세션 말소)
+    async invalidateSession(tenent: jwtPayload): Promise<void> {
+        const sessionKey = SessionKeyBuilder.build(tenent.accountId);
+        await this.chaseAndInvalidateAllSession(sessionKey);
+    }
+
     async validateAndGetAccount(email: string, password: string): Promise<InternalAccountDelivery> {
         const account = await this.internalAccountService.internalAccountDelivery(email);
         
@@ -157,6 +169,14 @@ export class AuthService {
 
         if (!isPasswordValid) throw new UnauthorizedException('Invalid email or password');
         return account;
+    }
+
+    async chaseAndInvalidateAllSession(accountSessionKey: string) : Promise<void> {
+        const oldSessionIds = await this.redisTemplate.smembers(accountSessionKey);
+        for (const oldSessionId of oldSessionIds) {
+            await this.redisTemplate.del(oldSessionId);
+        }
+        await this.redisTemplate.del(accountSessionKey);
     }
 
     isExpired(exp: number): boolean {

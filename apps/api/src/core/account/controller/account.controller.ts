@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query, UnauthorizedException } from "@nestjs/common";
 import { AccountService } from "../service/account.service";
-import { ApiBody, ApiOperation } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { CreateAccountRequest, PaginatedAccountSearchRequest } from "../domain/request/account.request";
 import { DetailedAccountResponse, SimpleAccountResponse } from "../domain/response/account.response";
 import { ApiWrappedPaginatedResponse, ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
@@ -9,11 +9,12 @@ import { TenantInjection } from "src/global/jwt/decorators/tenant.injection.deco
 import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
 
 @Controller('accounts')
+@ApiTags('회원')
 export class AccountController {
     constructor(private readonly accountService: AccountService) {}
 
     @Post('public/join')
-    @ApiOperation({ summary: 'Create a new account' })
+    @ApiOperation({ summary: '회원 가입' })
     @ApiBody({ type: CreateAccountRequest })
     @ApiWrappedResponse(SimpleAccountResponse)
     @PublicEntrypoint()
@@ -22,7 +23,8 @@ export class AccountController {
     }
 
     @Get()
-    @ApiOperation({ summary: 'Get all accounts' })
+    @ApiOperation({ summary: '모든 회원 조회' })
+    @ApiQuery({ type: PaginatedAccountSearchRequest })
     @ApiWrappedResponse(SimpleAccountResponse)
     async getAccounts(
         @Query() request: PaginatedAccountSearchRequest
@@ -31,14 +33,19 @@ export class AccountController {
     }
 
     @Get('me')
-    @ApiOperation({ summary: 'Get the current account' })
+    @ApiOperation({ summary: '로그인 중인 회원 조회'})
     @ApiWrappedResponse(DetailedAccountResponse)
     async me(@TenantInjection() tenant: jwtPayload) : Promise<DetailedAccountResponse> {
         return this.accountService.getAccountById(tenant.accountId);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'Get an account by id' })
+    @ApiOperation({ summary: 'ID로 회원 조회' })
+    @ApiParam({ name: 'id'
+        , type: Number
+        , description: '회원 ID'
+        , required: true
+    })
     @ApiWrappedPaginatedResponse(DetailedAccountResponse)
     async getAccountById(@Param('id') id: number): Promise<DetailedAccountResponse> {
         return this.accountService.getAccountById(id);
