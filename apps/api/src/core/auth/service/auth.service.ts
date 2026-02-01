@@ -1,17 +1,16 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InternalAccountService } from "src/core/account/service/internal.account.service";
 import { AuthRequest, ReissueRequest } from "../domain/request/auth.request";
-import { ContainedSession } from "../domain/response/auth.response";
+import { AuthResponse, ContainedSession } from "../domain/response/auth.response";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { InternalAccountDelivery } from "src/core/account/domain/internal/account.internal.delivery";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 import { RedisTemplate } from "src/global/redis/redis.template";
-import { randomUUID } from "crypto";
 import { EnsuredSessionDelivery, InternalSessionDelivery } from "../domain/element/auth.element";
-import { SessionKeyBuilder } from "../units/session.key.builder";
-import { CreateSessionScript } from "../units/session.script";
-import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
+import { SessionKeyBuilder } from "../../../global/session/builder/session.key.builder";
+import { JwtPolicyProvider } from "src/global/jwt/policy/jwt.policy.provider";
+import { SessionManager } from "src/global/session/manager/session.manager";
 
 type RefreshPayload = {
     accountId: number;
@@ -26,18 +25,12 @@ type RefreshPayload = {
 export class AuthService {
     constructor(private readonly internalAccountService: InternalAccountService
         , private readonly jwtService: JwtService
-        , private readonly redisTemplate: RedisTemplate) {}
-
-    private readonly expiresIn: number = Number(process.env.JWT_EXPIRES_IN ?? 900);
-    private readonly refreshExpiresIn: number = Number(process.env.JWT_REFRESH_EXPIRES_IN ?? 604800);
-    private readonly accessKey: Buffer = this.parseKey(process.env.JWT_SECRET ?? '');
-    private readonly refreshKey: Buffer = this.parseKey(process.env.JWT_REFRESH_SECRET ?? '');
+        , private readonly redisTemplate: RedisTemplate
+        , private readonly jwtPolicyProvider: JwtPolicyProvider
+        , private readonly sessionManager: SessionManager) {}
 
     async auth(request: AuthRequest): Promise<ContainedSession> {
         const accountMeta = await this.validateAndGetAccount(request.email, request.password);
-
-        const accountSessionKey = SessionKeyBuilder.build(accountMeta.accountId);
-        await this.chaseAndInvalidateAllSession(accountSessionKey);
 
         const payload = {
             accountId: accountMeta.accountId,
@@ -47,108 +40,89 @@ export class AuthService {
         }
 
         const accessToken = await this.jwtService.signAsync(payload, 
-            { expiresIn: this.expiresIn,
-                 secret: this.accessKey 
+            { expiresIn: this.jwtPolicyProvider.accessExpiresIn,
+                 secret: this.jwtPolicyProvider.accessKey 
             });
 
         const refreshToken = await this.jwtService.signAsync(payload, 
-            { expiresIn: this.refreshExpiresIn, 
-                secret: this.refreshKey });
+            { expiresIn: this.jwtPolicyProvider.refreshExpiresIn, 
+                secret: this.jwtPolicyProvider.refreshKey 
+            });
 
         const now = DatetimeProvider.now();
 
-        const actual = {
+        const actual: AuthResponse = {
             accessToken: accessToken,
             refreshToken: refreshToken,
-            accessTokenExpiresAt: now + this.expiresIn,
-            refreshTokenExpiresAt: now + this.refreshExpiresIn,
+            accessTokenExpiresAt: now + this.jwtPolicyProvider.accessExpiresIn,
+            refreshTokenExpiresAt: now + this.jwtPolicyProvider.refreshExpiresIn,
         }
 
-        const sessionId = randomUUID();
-
-        await this.redisTemplate.execute(
-            CreateSessionScript,
-            [sessionId, accountSessionKey],
-            [JSON.stringify(actual), this.refreshExpiresIn]
-        );
+        const sessionId = await this.sessionManager.createSession(accountMeta.accountId, actual, false);
         
         return {
             sessionId: sessionId,
             sessionCreatedAt: now,
-            sessionExpiresAt: now + this.expiresIn,
+            sessionExpiresAt: actual.refreshTokenExpiresAt,
         }
     }
 
     // 명시적인 세션 로테이트
-    async reissue(request: ReissueRequest): Promise<ContainedSession> {
+    async reissue(request: ReissueRequest, currentSessionId: string): Promise<ContainedSession> {
         const payload = await this.jwtService.verifyAsync(request.refreshToken, 
-            { secret: this.refreshKey }) as RefreshPayload;
+            { secret: this.jwtPolicyProvider.refreshKey }) as RefreshPayload;
 
         if (this.isExpired(payload.exp)) throw new UnauthorizedException('Refresh token expired');
 
         const { exp, iat, ...payloadForSign } = payload;
         
         const accessToken = await this.jwtService.signAsync(payloadForSign, 
-            { expiresIn: this.expiresIn, 
-                secret: this.accessKey });
+            { expiresIn: this.jwtPolicyProvider.accessExpiresIn, 
+                secret: this.jwtPolicyProvider.accessKey });
 
         const now = DatetimeProvider.now();
         const refreshExpiresIn = Math.abs(payload.exp - now);
         const refreshToken = await this.jwtService.signAsync(payloadForSign, 
             { expiresIn: refreshExpiresIn,
-                secret: this.refreshKey });
+                secret: this.jwtPolicyProvider.refreshKey });
 
         const actual = {
             accessToken: accessToken,
             refreshToken: refreshToken,
-            accessTokenExpiresAt: now + this.expiresIn,
+            accessTokenExpiresAt: now + this.jwtPolicyProvider.accessExpiresIn,
             refreshTokenExpiresAt: now + refreshExpiresIn,
         }
 
-        const sessionKey = SessionKeyBuilder.build(payload.accountId);
-        await this.chaseAndInvalidateAllSession(sessionKey);
-
-        
-        const sessionId = randomUUID();
-        await this.redisTemplate.execute(
-            CreateSessionScript,
-            [sessionId, sessionKey],
-            [JSON.stringify(actual), this.refreshExpiresIn]
-        );
+        const sessionId = await this.sessionManager.rotateSession(payload.accountId, actual, false, currentSessionId);
 
         return {
             sessionId: sessionId,
             sessionCreatedAt: now,
-            sessionExpiresAt: now + this.refreshExpiresIn,
+            sessionExpiresAt: now + this.jwtPolicyProvider.refreshExpiresIn,
         }
     }
 
     // 미들웨어 주관의 Access 갱신
     async ensure(session: InternalSessionDelivery): Promise<EnsuredSessionDelivery> {
         const payload = await this.jwtService.verifyAsync(session.refreshToken, 
-            { secret: this.refreshKey }) as RefreshPayload;
+            { secret: this.jwtPolicyProvider.refreshKey }) as RefreshPayload;
 
         if (this.isExpired(payload.exp)) throw new UnauthorizedException('Refresh token expired');
 
         const { exp, iat, ...payloadForSign } = payload;
         const accessToken = await this.jwtService.signAsync(payloadForSign, 
-            { expiresIn: this.expiresIn, 
-                secret: this.accessKey });
+            { expiresIn: this.jwtPolicyProvider.accessExpiresIn, 
+                secret: this.jwtPolicyProvider.accessKey });
 
         const now = DatetimeProvider.now();
         const actual = {
             accessToken: accessToken,
             refreshToken: session.refreshToken,
-            accessTokenExpiresAt: now + this.expiresIn,
+            accessTokenExpiresAt: now + this.jwtPolicyProvider.accessExpiresIn,
             refreshTokenExpiresAt: payload.exp
         }
 
-        const remainingRedisExpire = await this.redisTemplate.ttl(session.sessionId);
-        if (remainingRedisExpire === -2) throw new UnauthorizedException('Session not found');
-
-        const ttl = remainingRedisExpire > 0 ? remainingRedisExpire : this.refreshExpiresIn;
-
-        this.redisTemplate.set(session.sessionId, JSON.stringify(actual), ttl);
+        await this.sessionManager.ensureSession(session.sessionId, actual);
 
         return {
             sessionId: session.sessionId,
@@ -156,10 +130,10 @@ export class AuthService {
         }
     }
 
-    // 로그아웃 (전체 세션 말소)
-    async invalidateSession(tenent: jwtPayload): Promise<void> {
-        const sessionKey = SessionKeyBuilder.build(tenent.accountId);
-        await this.chaseAndInvalidateAllSession(sessionKey);
+    // 로그아웃 (현재 세션 말소)
+    async invalidateSession(accountId: number, sessionId: string): Promise<void> {
+        const accountSessionKey = SessionKeyBuilder.build(accountId);
+        await this.sessionManager.invalidateTargetSession(accountSessionKey, sessionId);
     }
 
     async validateAndGetAccount(email: string, password: string): Promise<InternalAccountDelivery> {
