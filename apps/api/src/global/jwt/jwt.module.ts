@@ -30,7 +30,8 @@ import { JwtPolicyProvider } from "./policy/jwt.policy.provider";
         JwtPolicyProvider,
     ],
     exports: [
-        JwtModule
+        JwtModule,
+        JwtPolicyProvider,
     ]
 })
 export class JwtGlobalModule {

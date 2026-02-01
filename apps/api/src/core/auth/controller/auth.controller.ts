@@ -7,7 +7,8 @@ import { ContainedSession } from "../domain/response/auth.response";
 import { PublicEntrypoint } from "../decorators/public.entrypoint";
 import { TenantInjection } from "src/global/jwt/decorators/tenant.injection.decorator";
 import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
-import { RetrieveSession } from "src/global/jwt/decorators/session.retrieve.decorator";
+import { RetrieveSession } from "src/global/session/decorators/session.retrieve.decorator";
+import { RejectIfContaining } from "src/global/session/decorators/contain.rejection.decorator";
 
 @Controller('auth')
 @ApiTags('로그인')
@@ -18,6 +19,7 @@ export class AuthController {
     @ApiOperation({ summary: '로그인' })
     @ApiBody({ type: AuthRequest })
     @ApiWrappedResponse(ContainedSession)
+    @RejectIfContaining()
     @PublicEntrypoint()
     async login(@Body() request: AuthRequest): Promise<ContainedSession> {
         return this.authService.auth(request);

@@ -4,6 +4,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthService } from "./service/auth.service";
 import { AccountModule } from "../account/account.module";
 import { AuthController } from "./controller/auth.controller";
+import { SessionModule } from "src/global/session/session.module";
+import { JwtGlobalModule } from "src/global/jwt/jwt.module";
 
 @Module({
     imports: [
@@ -17,6 +19,8 @@ import { AuthController } from "./controller/auth.controller";
                 },
             }),
         }),
+        SessionModule,
+        JwtGlobalModule
       ],
     providers: [
       AuthService,

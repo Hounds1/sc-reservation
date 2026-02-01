@@ -7,11 +7,8 @@ import { JwtService } from "@nestjs/jwt";
 import { InternalAccountDelivery } from "src/core/account/domain/internal/account.internal.delivery";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 import { RedisTemplate } from "src/global/redis/redis.template";
-import { randomUUID } from "crypto";
 import { EnsuredSessionDelivery, InternalSessionDelivery } from "../domain/element/auth.element";
 import { SessionKeyBuilder } from "../../../global/session/builder/session.key.builder";
-import { CreateSessionScript } from "../../../global/session/manager/session.script";
-import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
 import { JwtPolicyProvider } from "src/global/jwt/policy/jwt.policy.provider";
 import { SessionManager } from "src/global/session/manager/session.manager";
 

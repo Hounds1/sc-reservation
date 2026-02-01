@@ -1,10 +1,9 @@
 import { RedisTemplate } from "src/global/redis/redis.template";
 import { SessionKeyBuilder } from "../builder/session.key.builder";
-import { jwtPayload } from "src/global/jwt/strategies/jwt.strategy";
 import { randomUUID } from "crypto";
 import { CreateSessionScript, InvalidateTargetSessionScript, RotateSessionScript } from "./session.script";
 import { JwtPolicyProvider } from "src/global/jwt/policy/jwt.policy.provider";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { AuthResponse } from "src/core/auth/domain/response/auth.response";
 
 @Injectable()
@@ -14,12 +13,13 @@ export class SessionManager {
     constructor(private readonly redisTemplate: RedisTemplate, private readonly jwtPolicyProvider: JwtPolicyProvider) {}
 
     async createSession(accountId: number, tokens: AuthResponse, invalidateAll: boolean = false): Promise<string> {
-        const sessionId = randomUUID();
-        
         const accountSessionKey = SessionKeyBuilder.build(accountId);
-        if (invalidateAll) {
-            await this.chaseAndInvalidateAllSession(accountSessionKey);
-        }
+        if(await this.isLimitExceeded(accountSessionKey)) 
+            throw new ConflictException('Session limit exceeded. Please logout and try again.');
+        
+        const sessionId = randomUUID();
+    
+        if (invalidateAll) await this.chaseAndInvalidateAllSession(accountSessionKey);
 
         await this.redisTemplate.execute(
             CreateSessionScript,
