@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     async validate(payload: jwtPayload): Promise<jwtPayload> {
         const account = await this.internalAccountService.internalAccountDelivery(payload.email);
         if (account.status != 'ACTIVE') throw new UnauthorizedException('Account is not activated');
-
+        
         return { accountId: payload.accountId, email: payload.email, role: account.role, status: account.status };
     }
 }

@@ -43,7 +43,8 @@ export class AccessEnsureMiddleware implements NestMiddleware {
                     refreshToken: actual.refreshToken,
                 });
                 accessToken = ensured.accessToken;
-            } catch {
+            } catch(error) {
+                console.log('ensure error', error);
                 return next();
             }
         }
