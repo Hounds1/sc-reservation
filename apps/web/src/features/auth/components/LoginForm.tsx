@@ -7,9 +7,10 @@ import { auth } from '../services/auth';
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  onSwitchToSignup?: () => void;
 }
 
-export function LoginForm({ onSuccess }: LoginFormProps) {
+export function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProps) {
   const t = useTranslations('auth.login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,11 +42,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         text: t('noAccount'),
         linkText: t('signUpLink'),
         linkHref: '/sign-up',
+        onLinkClick: onSwitchToSignup,
       }}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-black dark:text-white mb-2">
             {t('emailLabel')}
           </label>
           <input
@@ -54,12 +56,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('emailPlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-black dark:text-white mb-2">
             {t('passwordLabel')}
           </label>
           <input
@@ -68,14 +70,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder={t('passwordPlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
           />
         </div>
 
         <button
           type="submit"
           disabled={isLoading || !isFormValid}
-          className="w-full py-3 bg-green-800 text-white font-semibold rounded-md hover:bg-green-900 transition-colors"
+          className="w-full py-3 bg-green-800 text-white font-semibold rounded-md hover:bg-green-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {t('submitButton')}
         </button>

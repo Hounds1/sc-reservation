@@ -1,6 +1,6 @@
 'use client';
 
-import { Modal } from '../../../components/ui/AuthModal';
+import { Modal } from '@/components/ui/Modal';
 import { SignupForm } from './SignupForm';
 
 interface SignupModalProps {

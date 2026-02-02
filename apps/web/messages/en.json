@@ -1,4 +1,37 @@
 {
+    "header": {
+      "nav": {
+        "cafe": "Cafe",
+        "stats": "Stats",
+        "mypage": "My Page"
+      },
+      "login": "Login",
+      "logout": "Logout",
+      "darkMode": "Toggle dark mode"
+    },
+    "home": {
+      "title": "Find Your Perfect Study Spot",
+      "subtitle": "From quiet cafes to private study rooms, reserve the ideal place for your focus.",
+      "cta": {
+        "explore": "Explore Spaces",
+        "learnMore": "Learn More"
+      },
+      "features": {
+        "title": "Why Study Spot?",
+        "search": {
+          "title": "Easy Search",
+          "description": "Quickly find your ideal study space by location, amenities, atmosphere, and more."
+        },
+        "reserve": {
+          "title": "Simple Booking",
+          "description": "Reserve your seat at your preferred time with just a few clicks."
+        },
+        "stats": {
+          "title": "Study Statistics",
+          "description": "Analyze your study time and patterns to build more efficient learning habits."
+        }
+      }
+    },
     "auth": {
       "login": {
         "title": "Welcome back",

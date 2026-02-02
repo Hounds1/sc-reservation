@@ -5,7 +5,12 @@ import { useTranslations } from 'next-intl';
 import { AuthCard } from '@/components/ui/AuthCard';
 import { createAccount } from '../services/accounts';
 
-export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
+interface SignupFormProps {
+  onSuccess?: () => void;
+  onSwitchToLogin?: () => void;
+}
+
+export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
   const t = useTranslations('auth.signup');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -39,11 +44,12 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         text: t('hasAccount'),
         linkText: t('signInLink'),
         linkHref: '/login',
+        onLinkClick: onSwitchToLogin,
       }}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-black dark:text-white mb-2">
             {t('nameLabel')}
           </label>
           <input
@@ -52,12 +58,12 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t('namePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
           />
         </div>
 
         <div>
-          <label htmlFor="displayName" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="displayName" className="block text-sm font-medium text-black dark:text-white mb-2">
             {t('displayNameLabel')}
           </label>
           <input
@@ -66,12 +72,12 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder={t('displayNamePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-black dark:text-white mb-2">
             {t('emailLabel')}
           </label>
           <input
@@ -80,12 +86,12 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('emailPlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-black dark:text-white mb-2">
             {t('passwordLabel')}
           </label>
           <input
@@ -94,13 +100,13 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder={t('passwordPlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
           />
-          <p className="text-xs text-gray-500 mt-1">{t('passwordHint')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('passwordHint')}</p>
         </div>
 
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">
+          <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-600 dark:text-red-400">
             {error}
           </div>
         )}

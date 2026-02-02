@@ -24,9 +24,9 @@ export const RotateSessionScript = new RedisScript<string>(
 
 export const InvalidateTargetSessionScript = new RedisScript<string>(
   `
-  redis.call('SREM', KEYS[1], ARGV[2])
-  redis.call('DEL', ARGV[2])
+  redis.call('SREM', KEYS[1], ARGV[1])
+  redis.call('DEL', ARGV[1])
   return 'OK'
   `,
-  2
+  1
 );
