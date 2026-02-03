@@ -1,4 +1,37 @@
 {
+    "header": {
+      "nav": {
+        "cafe": "카페",
+        "stats": "통계",
+        "mypage": "마이페이지"
+      },
+      "login": "로그인",
+      "logout": "로그아웃",
+      "darkMode": "다크모드 토글"
+    },
+    "home": {
+      "title": "완벽한 스터디 공간을 찾아보세요",
+      "subtitle": "조용한 카페부터 프라이빗 스터디룸까지, 당신의 집중을 위한 최적의 장소를 예약하세요.",
+      "cta": {
+        "explore": "공간 둘러보기",
+        "learnMore": "자세히 알아보기"
+      },
+      "features": {
+        "title": "왜 Study Spot인가요?",
+        "search": {
+          "title": "쉬운 검색",
+          "description": "위치, 시설, 분위기 등 다양한 조건으로 원하는 스터디 공간을 빠르게 찾아보세요."
+        },
+        "reserve": {
+          "title": "간편한 예약",
+          "description": "몇 번의 클릭만으로 원하는 시간에 좌석을 예약하고 확정하세요."
+        },
+        "stats": {
+          "title": "학습 통계",
+          "description": "공부 시간과 패턴을 분석하여 더 효율적인 학습 습관을 만들어보세요."
+        }
+      }
+    },
     "auth": {
       "login": {
         "title": "다시 오신 것을 환영합니다",

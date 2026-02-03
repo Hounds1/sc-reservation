@@ -19,7 +19,7 @@ apiClient.interceptors.request.use(
       const cookieStore = await cookies();
       const sessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value;
       if (sessionId) {
-        config.headers[SESSION_COOKIE_NAME] = sessionId;
+        config.headers['Cookie'] = `${SESSION_COOKIE_NAME}=${sessionId}`;
       }
     } catch {
     }
