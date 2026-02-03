@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/Modal';
 import { LoginForm } from '@/features/auth/components/LoginForm';
 import { SignupForm } from '@/features/account/components/SignupForm';
 import { useAuth } from '@/features/auth/context/AuthContext';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 
 type AuthModalMode = 'login' | 'signup' | null;
 type Locale = 'ko' | 'en';
@@ -22,6 +23,7 @@ const navItemsConfig = [
   { 
     href: '/cafe', 
     labelKey: 'nav.cafe',
+    requiresAuth: false,
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -31,6 +33,7 @@ const navItemsConfig = [
   { 
     href: '/stats', 
     labelKey: 'nav.stats',
+    requiresAuth: true,
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -40,6 +43,7 @@ const navItemsConfig = [
   { 
     href: '/mypage', 
     labelKey: 'nav.mypage',
+    requiresAuth: true,
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -53,6 +57,7 @@ export function Header() {
   const currentLocale = useLocale() as Locale;
   const t = useTranslations('header');
   const { isAuthenticated, isLoading, user, refreshAuth, logout } = useAuth();
+  const { tryNavigate } = useAuthGuard();
   const [isDark, setIsDark] = useState(false);
   const [isLocaleDropdownOpen, setIsLocaleDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -74,6 +79,13 @@ export function Header() {
   const handleLogout = async () => {
     setIsUserDropdownOpen(false);
     await logout();
+  };
+
+  // 네비게이션 클릭 처리
+  const handleNavClick = (href: string, requiresAuth: boolean) => {
+    if (!tryNavigate(href, requiresAuth)) {
+      setAuthModalMode('login');
+    }
   };
 
   // 다크모드 초기화 및 적용
@@ -142,7 +154,10 @@ export function Header() {
     <header className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* 로고 */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link 
+          href="/" 
+          className="flex items-center gap-2 rounded-lg p-1 -m-1 transition-all duration-200 hover:opacity-80 hover:scale-[1.02] active:scale-[0.98]"
+        >
           <Image 
             src="/logo.svg" 
             alt="Study Spot" 
@@ -160,21 +175,21 @@ export function Header() {
             {navItemsConfig.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Link
+                <button
                   key={item.href}
-                  href={item.href}
+                  onClick={() => handleNavClick(item.href, item.requiresAuth)}
                   className={`
                     flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
-                    transition-colors
+                    transition-all duration-200 ease-out
                     ${isActive 
-                      ? 'bg-green-800 text-white' 
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? 'bg-green-800 text-white shadow-sm' 
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 hover:scale-[1.02] active:scale-[0.98]'
                     }
                   `}
                 >
                   {item.icon}
                   <span>{t(item.labelKey)}</span>
-                </Link>
+                </button>
               );
             })}
           </nav>
@@ -182,7 +197,7 @@ export function Header() {
           {/* 다크모드 토글 */}
           <button
             onClick={toggleDarkMode}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+            className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200 ease-out hover:scale-110 active:scale-95"
             aria-label={t('darkMode')}
           >
             {isDark ? (
@@ -200,7 +215,7 @@ export function Header() {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsLocaleDropdownOpen(!isLocaleDropdownOpen)}
-              className="flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
+              className="flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-green-50 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all duration-200 ease-out hover:scale-[1.02] active:scale-[0.98]"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -219,10 +234,10 @@ export function Header() {
                     key={locale}
                     onClick={() => changeLocale(locale)}
                     className={`
-                      w-full px-4 py-2 text-left text-sm transition-colors
+                      w-full px-4 py-2 text-left text-sm transition-all duration-200
                       ${currentLocale === locale 
                         ? 'bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300 font-medium' 
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 hover:translate-x-0.5'
                       }
                     `}
                   >
@@ -239,7 +254,7 @@ export function Header() {
               <div className="relative ml-2" ref={userDropdownRef}>
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium transition-all duration-200 ease-out hover:bg-green-50 dark:hover:bg-gray-700 hover:shadow-md hover:border-green-200 dark:hover:border-gray-500 active:scale-[0.98]"
                 >
                   {/* 사용자 아바타 */}
                   <div className="w-7 h-7 bg-green-700 dark:bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -263,7 +278,7 @@ export function Header() {
                     {/* 메뉴 항목 */}
                     <button
                       onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 flex items-center gap-2"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -276,7 +291,7 @@ export function Header() {
             ) : (
               <button
                 onClick={() => setAuthModalMode('login')}
-                className="ml-2 px-5 py-2 bg-green-700 dark:bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-green-800 dark:hover:bg-blue-500 active:scale-[0.98] transition-all duration-150"
+                className="ml-2 px-5 py-2 bg-green-700 dark:bg-blue-600 text-white rounded-lg text-sm font-medium transition-all duration-200 ease-out hover:bg-green-800 dark:hover:bg-blue-500 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
               >
                 {t('login')}
               </button>
