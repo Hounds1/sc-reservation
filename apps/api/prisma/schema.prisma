@@ -26,3 +26,29 @@ model accounts {
   last_login_at   BigInt?
   email_verified_at   BigInt?
 }
+
+model cafes {
+  cate_id BigInt @id @default(autoincrement())
+  business_name String @unique @db.Text
+  address1 String @db.Text
+  address2 String @db.Text
+  created_at BigInt
+  updated_at BigInt?
+}
+
+model cafe_images {
+  image_id BigInt @id @default(autoincrement())
+  cafe_id BigInt
+  image_src String @db.Text
+  origin_name String @db.Text
+  identified_name String @unique @db.Text
+  extension String @db.VarChar(10)
+}
+
+model prices {
+  price_id BigInt @id @default(autoincrement())
+  cafe_id BigInt
+  amount_subtotal Decimal @db.Decimal(18, 2)
+  amount_tax Decimal @db.Decimal(18, 2)
+  amount_total Decimal @db.Decimal(18, 2)
+}
