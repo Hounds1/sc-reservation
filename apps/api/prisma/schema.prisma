@@ -28,12 +28,15 @@ model accounts {
 }
 
 model cafes {
-  cate_id BigInt @id @default(autoincrement())
+  cafe_id BigInt @id @default(autoincrement())
   business_name String @unique @db.Text
   address1 String @db.Text
   address2 String @db.Text
   created_at BigInt
   updated_at BigInt?
+
+  images cafe_images[]
+  prices prices[]
 }
 
 model cafe_images {
@@ -43,6 +46,8 @@ model cafe_images {
   origin_name String @db.Text
   identified_name String @unique @db.Text
   extension String @db.VarChar(10)
+
+  cafe cafes @relation(fields: [cafe_id], references: [cafe_id])
 }
 
 model prices {
@@ -51,4 +56,6 @@ model prices {
   amount_subtotal Decimal @db.Decimal(18, 2)
   amount_tax Decimal @db.Decimal(18, 2)
   amount_total Decimal @db.Decimal(18, 2)
+
+  cafe cafes @relation(fields: [cafe_id], references: [cafe_id])
 }
