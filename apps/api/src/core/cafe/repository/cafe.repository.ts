@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
-import { Cafe, mapCafeModelToCafeWithImages } from "../domain/cafe";
+import { Cafe, CafeImage, mapCafeModelToCafeWithImages, transformToCafeImage } from "../domain/cafe";
+import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 
 @Injectable()
 export class CafeRepository {
 
-    constructor(private readonly prismaConnector: PrismaConnector) {}
+    constructor(private readonly prismaConnector: PrismaConnector) { }
 
     async createCafe(cafe: Cafe): Promise<Cafe> {
         const result = await this.prismaConnector.$transaction(async (tx) => {
@@ -39,5 +40,66 @@ export class CafeRepository {
         });
 
         return mapCafeModelToCafeWithImages(result.createdCafe, result.createdImages);
+    }
+
+    async updateCafe(cafe: Cafe, deleteImageIds: number[]): Promise<Cafe> {
+        const result = await this.prismaConnector.$transaction(async (tx) => {
+            const updatedCafe = await tx.cafes.update({
+                where: { cafe_id: cafe.cafeId },
+                data: {
+                    ...(cafe.businessName != null && { business_name: cafe.businessName }),
+                    ...(cafe.address1 != null && { address1: cafe.address1 }),
+                    ...(cafe.address2 != null && { address2: cafe.address2 }),
+                    updated_at: BigInt(DatetimeProvider.now()),
+                },
+            });
+
+            if (deleteImageIds.length > 0) {
+                await tx.cafe_images.deleteMany({
+                    where: { cafe_id: cafe.cafeId, image_id: { in: deleteImageIds } },
+                });
+            }
+
+            const newImagesOnly = cafe.images.filter((img) => img.imageId == null);
+            if (newImagesOnly.length > 0) {
+                await tx.cafe_images.createMany({
+                    data: newImagesOnly.map((img) => ({
+                        cafe_id: updatedCafe.cafe_id,
+                        image_src: img.imageSrc,
+                        origin_name: img.originName,
+                        identified_name: img.identifiedName,
+                        extension: img.extension,
+                    }
+                    ))
+                });
+            }
+
+            const images = await tx.cafe_images.findMany({
+                where: { cafe_id: updatedCafe.cafe_id }
+            });
+
+            return { updatedCafe, images };
+        });
+
+        return mapCafeModelToCafeWithImages(result.updatedCafe, result.images);
+    }
+
+    async selectCafeById(cafeId: number): Promise<Cafe> {
+        const result = await this.prismaConnector.cafes.findUnique({
+            where: { cafe_id: cafeId },
+            include: {
+                images: true,
+            },
+        });
+
+        return mapCafeModelToCafeWithImages(result, result.images);
+    }
+
+    async selectCafeImagesByCafeId(cafeId: number): Promise<CafeImage[]> {
+        const result = await this.prismaConnector.cafe_images.findMany({
+            where: { cafe_id: cafeId },
+        });
+
+        return result.map(transformToCafeImage);
     }
 }

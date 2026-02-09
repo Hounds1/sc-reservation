@@ -9,13 +9,25 @@ export class Cafe {
     address2: string;
     createdAt: number;
     updatedAt: number | null;
-    images: {
-        imageId: number;
-        imageSrc: string;
-        originName: string;
-        identifiedName: string;
-        extension: string;
-    }[];
+    images: CafeImage[];
+}
+
+export class CafeImage {
+    imageId: number;
+    imageSrc: string;
+    originName: string;
+    identifiedName: string;
+    extension: string;
+}
+
+export function transformToCafeImage(image: cafe_imagesModel): CafeImage {
+    return {
+        imageId: Number(image.image_id),
+        imageSrc: image.image_src,
+        originName: image.origin_name,
+        identifiedName: image.identified_name,
+        extension: image.extension,
+    }
 }
 
 export function transformToEntity(request: CafeCreateRequestWithImages): Cafe {
@@ -35,6 +47,8 @@ export function transformToEntity(request: CafeCreateRequestWithImages): Cafe {
         })),
     }
 }
+
+
 
 export function mapCafeModelToCafe(prismaCafe: cafesModel): Cafe {
     return {
