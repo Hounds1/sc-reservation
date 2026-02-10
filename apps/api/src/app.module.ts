@@ -5,12 +5,18 @@ import { PaginationMiddleware } from './global/pagination/pagination.middleware'
 import { GlobalModule } from './global/global.module';
 import { CoreModule } from './core/core.module';
 import { AccessEnsureMiddleware } from './global/jwt/middleware/access.ensure.middleware';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import path from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+    })
+    , ServeStaticModule.forRoot({
+      rootPath: path.join(process.cwd(), 'storage'),
+      serveRoot: '/storage',
     })
     , GlobalModule
     , CoreModule

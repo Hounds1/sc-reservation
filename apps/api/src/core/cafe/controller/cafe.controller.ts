@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { CafeService } from "../sercice/cafe.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
@@ -11,6 +11,13 @@ import { CafeCreateRequest, CafeModifyRequest } from "../domain/request/cafe.req
 export class CafeController {
 
     constructor(private readonly cafeService: CafeService) {}
+
+    @Get()
+    @ApiOperation({ summary: '카페 목록 조회' })
+    @ApiWrappedResponse(CafeResponse)
+    async getAllCafes(): Promise<CafeResponse[]> {
+        return this.cafeService.getAllCafes();
+    }
 
     @Post()
     @ApiOperation({ summary: '카페 생성' })
