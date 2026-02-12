@@ -56,6 +56,7 @@ model prices {
   amount_subtotal Decimal @db.Decimal(18, 2)
   amount_tax Decimal @db.Decimal(18, 2)
   amount_total Decimal @db.Decimal(18, 2)
+  duration Decimal @db.Decimal(18, 2)
 
   cafe cafes @relation(fields: [cafe_id], references: [cafe_id])
 }

@@ -1,6 +1,6 @@
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 import { CafeCreateRequestWithImages } from "./request/cafe.request";
-import { cafe_imagesModel, cafesModel } from "generated/prisma/models";
+import { cafe_imagesModel, cafesModel, pricesModel } from "generated/prisma/models";
 
 export class Cafe {
     cafeId: number;
@@ -10,6 +10,7 @@ export class Cafe {
     createdAt: number;
     updatedAt: number | null;
     images: CafeImage[];
+    prices: CafePrice[];
 }
 
 export class CafeImage {
@@ -18,6 +19,15 @@ export class CafeImage {
     originName: string;
     identifiedName: string;
     extension: string;
+}
+
+export class CafePrice {
+    priceId: number;
+    cafeId: number;
+    amountSubtotal: number;
+    amountTax: number;
+    amountTotal: number;
+    duration: number; // 이용 시간
 }
 
 export function transformToCafeImage(image: cafe_imagesModel): CafeImage {
@@ -45,9 +55,9 @@ export function transformToEntity(request: CafeCreateRequestWithImages): Cafe {
             identifiedName: image.filename,
             extension: image.mimetype.split('/')[1] || '',
         })),
+        prices: [],
     }
 }
-
 
 
 export function mapCafeModelToCafe(prismaCafe: cafesModel): Cafe {
@@ -59,6 +69,7 @@ export function mapCafeModelToCafe(prismaCafe: cafesModel): Cafe {
         createdAt: Number(prismaCafe.created_at),
         updatedAt: prismaCafe.updated_at ? Number(prismaCafe.updated_at) : null,
         images: [],
+        prices: [],
     };
 }
 
@@ -74,6 +85,49 @@ export function mapCafeModelToCafeWithImages(
             originName: img.origin_name,
             identifiedName: img.identified_name,
             extension: img.extension,
+        })),
+        prices: [],
+    };
+}
+
+export function mapCafeModelToCafeWithPrices(
+    prismaCafe: cafesModel,
+    prismaPrices: pricesModel[],
+): Cafe {
+    return {
+        ...mapCafeModelToCafe(prismaCafe),
+        prices: prismaPrices.map((price) => ({
+            priceId: Number(price.price_id),
+            cafeId: Number(price.cafe_id),
+            amountSubtotal: Number(price.amount_subtotal),
+            amountTax: Number(price.amount_tax),
+            amountTotal: Number(price.amount_total),
+            duration: Number(price.duration),
+        })),
+    };
+}
+
+export function mapCafeModelToCafeWithPricesAndImages(
+    prismaCafe: cafesModel,
+    prismaImages: cafe_imagesModel[],
+    prismaPrices: pricesModel[],
+): Cafe {
+    return {
+        ...mapCafeModelToCafeWithPrices(prismaCafe, prismaPrices),
+        images: prismaImages.map((img) => ({
+            imageId: Number(img.image_id),
+            imageSrc: img.image_src,
+            originName: img.origin_name,
+            identifiedName: img.identified_name,
+            extension: img.extension,
+        })),
+        prices: prismaPrices.map((price) => ({
+            priceId: Number(price.price_id),
+            cafeId: Number(price.cafe_id),
+            amountSubtotal: Number(price.amount_subtotal),
+            amountTax: Number(price.amount_tax),
+            amountTotal: Number(price.amount_total),
+            duration: Number(price.duration),
         })),
     };
 }
