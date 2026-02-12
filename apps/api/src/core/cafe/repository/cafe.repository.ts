@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
-import { Cafe, CafeImage, CafePrice, mapCafeModelToCafeWithImages, mapCafeModelToCafeWithPrices, transformToCafeImage } from "../domain/cafe";
+import { Cafe, CafeImage, CafePrice, mapCafeModelToCafeWithImages, mapCafeModelToCafeWithPrices, mapCafeModelToCafeWithPricesAndImages, transformToCafeImage } from "../domain/cafe";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 
 @Injectable()
@@ -115,10 +115,11 @@ export class CafeRepository {
             where: { cafe_id: cafeId },
             include: {
                 images: true,
+                prices: true,
             },
         });
 
-        return mapCafeModelToCafeWithImages(result, result.images);
+        return mapCafeModelToCafeWithPricesAndImages(result, result.images, result.prices);
     }
 
     async selectCafeImagesByCafeId(cafeId: number): Promise<CafeImage[]> {
@@ -133,9 +134,10 @@ export class CafeRepository {
         const result = await this.prismaConnector.cafes.findMany({
             include: {
                 images: true,
+                prices: true,
             },
         });
 
-        return result.map((cafe) => mapCafeModelToCafeWithImages(cafe, cafe.images));
+        return result.map((cafe) => mapCafeModelToCafeWithPricesAndImages(cafe, cafe.images, cafe.prices));
     }
 }

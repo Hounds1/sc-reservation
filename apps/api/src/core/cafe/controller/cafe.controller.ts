@@ -19,6 +19,13 @@ export class CafeController {
         return this.cafeService.getAllCafes();
     }
 
+    @Get(':cafeId')
+    @ApiOperation({ summary: '카페 상세 조회' })
+    @ApiWrappedResponse(CafeResponse)
+    async getCafeById(@Param('cafeId') cafeId: number): Promise<CafeResponse> {
+        return this.cafeService.getCafeById(cafeId);
+    }
+
     @Post()
     @ApiOperation({ summary: '카페 생성' })
     @ApiWrappedResponse(CafeResponse)

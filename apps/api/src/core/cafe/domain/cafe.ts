@@ -27,7 +27,7 @@ export class CafePrice {
     amountSubtotal: number;
     amountTax: number;
     amountTotal: number;
-    duration: number; // 이용 시간
+    duration: number; // 이용
 }
 
 export function transformToCafeImage(image: cafe_imagesModel): CafeImage {

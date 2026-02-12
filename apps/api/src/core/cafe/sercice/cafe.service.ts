@@ -139,4 +139,9 @@ export class CafeService {
     const cafes = await this.cafeRepository.selectCafes();
     return cafes.map(transformToResponse);
   }
+
+  async getCafeById(cafeId: number): Promise<CafeResponse> {
+    const cafe = await this.cafeRepository.selectCafeById(cafeId);
+    return transformToResponse(cafe);
+  }
 }
