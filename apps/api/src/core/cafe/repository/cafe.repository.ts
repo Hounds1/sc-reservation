@@ -102,4 +102,14 @@ export class CafeRepository {
 
         return result.map(transformToCafeImage);
     }
+
+    async selectCafes(): Promise<Cafe[]> {
+        const result = await this.prismaConnector.cafes.findMany({
+            include: {
+                images: true,
+            },
+        });
+
+        return result.map((cafe) => mapCafeModelToCafeWithImages(cafe, cafe.images));
+    }
 }
