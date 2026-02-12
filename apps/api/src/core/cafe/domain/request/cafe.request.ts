@@ -1,6 +1,6 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 export class CafeCreateRequest {
 
@@ -101,4 +101,48 @@ export class CafeModifyRequest {
 
 export class CafeModifyRequestWithImages extends CafeModifyRequest {
     images: Express.Multer.File[];
+}
+
+export class CafePriceCreateRequest {
+    @ApiProperty({
+        description: 'The amount subtotal of the price',
+        example: 10000,
+    })
+    @IsNotEmpty({ message: 'Amount subtotal is required' })
+    @IsNumber({}, { message: 'Amount subtotal must be a number' })
+    amountSubtotal: number;
+
+    @ApiProperty({
+        description: 'The amount tax of the price',
+        example: 1000,
+    })
+    @IsNotEmpty({ message: 'Amount tax is required' })
+    @IsNumber({}, { message: 'Amount tax must be a number' })
+    amountTax: number;
+
+    @ApiProperty({
+        description: 'The amount total of the price',
+        example: 11000,
+    })
+    @IsNotEmpty({ message: 'Amount total is required' })
+    @IsNumber({}, { message: 'Amount total must be a number' })
+    amountTotal: number;
+
+    @ApiProperty({
+        description: 'The duration of the price',
+        example: 1,
+    })
+    @IsNotEmpty({ message: 'Duration is required' })
+    @IsNumber({}, { message: 'Duration must be a number' })
+    duration: number;
+
+    @ApiHideProperty()
+    _cafeId : number;
+
+    set cafeId(value: number) {
+        this._cafeId = value;
+    }
+    get cafeId(): number {
+        return this._cafeId;
+    }
 }

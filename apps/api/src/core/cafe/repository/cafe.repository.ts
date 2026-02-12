@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
-import { Cafe, CafeImage, mapCafeModelToCafeWithImages, transformToCafeImage } from "../domain/cafe";
+import { Cafe, CafeImage, CafePrice, mapCafeModelToCafeWithImages, mapCafeModelToCafeWithPrices, mapCafeModelToCafeWithPricesAndImages, transformToCafeImage } from "../domain/cafe";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 
 @Injectable()
@@ -84,15 +84,42 @@ export class CafeRepository {
         return mapCafeModelToCafeWithImages(result.updatedCafe, result.images);
     }
 
+    async createCafePrices(prices: CafePrice[]): Promise<Cafe> {
+        const result = await this.prismaConnector.$transaction(async (tx) => {
+            await tx.prices.createMany({
+                data: prices.map((price) => ({
+                    cafe_id: price.cafeId,
+                    amount_subtotal: price.amountSubtotal,
+                    amount_tax: price.amountTax,
+                    amount_total: price.amountTotal,
+                    duration: price.duration,
+                })),
+            });
+
+
+            const cafe = await tx.cafes.findUnique({
+                where: { cafe_id: prices[0].cafeId },
+                include: {
+                    prices: true,
+                },
+            });
+
+            return cafe;
+        });
+
+        return mapCafeModelToCafeWithPrices(result, result.prices);
+    }
+
     async selectCafeById(cafeId: number): Promise<Cafe> {
         const result = await this.prismaConnector.cafes.findUnique({
             where: { cafe_id: cafeId },
             include: {
                 images: true,
+                prices: true,
             },
         });
 
-        return mapCafeModelToCafeWithImages(result, result.images);
+        return mapCafeModelToCafeWithPricesAndImages(result, result.images, result.prices);
     }
 
     async selectCafeImagesByCafeId(cafeId: number): Promise<CafeImage[]> {
@@ -107,9 +134,10 @@ export class CafeRepository {
         const result = await this.prismaConnector.cafes.findMany({
             include: {
                 images: true,
+                prices: true,
             },
         });
 
-        return result.map((cafe) => mapCafeModelToCafeWithImages(cafe, cafe.images));
+        return result.map((cafe) => mapCafeModelToCafeWithPricesAndImages(cafe, cafe.images, cafe.prices));
     }
 }

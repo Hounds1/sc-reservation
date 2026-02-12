@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { CafeRepository } from "../repository/cafe.repository";
-import { CafeCreateRequestWithImages, CafeModifyRequestWithImages } from "../domain/request/cafe.request";
-import { Cafe, transformToEntity } from "../domain/cafe";
-import { CafeResponse, transformToResponse } from "../domain/response/cafe.response";
+import { CafeCreateRequestWithImages, CafeModifyRequestWithImages, CafePriceCreateRequest } from "../domain/request/cafe.request";
+import { Cafe, CafePrice, transformToEntity } from "../domain/cafe";
+import { CafePriceResponse, CafeResponse, transformToResponse } from "../domain/response/cafe.response";
 import { StorageService } from "../../storage/service/storage.service";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 
@@ -45,6 +45,7 @@ export class CafeService {
         createdAt: DatetimeProvider.now(),
         updatedAt: null,
         images: imagesWithPaths,
+        prices: [],
       };
 
       const createdCafe = await this.cafeRepository.createCafe(cafeEntity);
@@ -115,8 +116,32 @@ export class CafeService {
     }
   }
 
+  async createCafePrice(request: CafePriceCreateRequest[]): Promise<CafeResponse> {
+    const prices = await Promise.all(request.map(async (price) => {
+      const transformedPrice: CafePrice = {
+        priceId: null,
+        cafeId: price.cafeId,
+        amountSubtotal: price.amountSubtotal,
+        amountTax: price.amountTax,
+        amountTotal: price.amountTotal,
+        duration: price.duration,
+      };
+
+      return transformedPrice;
+    }));
+
+    const cafeWithPrices = await this.cafeRepository.createCafePrices(prices);
+
+    return transformToResponse(cafeWithPrices);
+  }
+
   async getAllCafes(): Promise<CafeResponse[]> {
     const cafes = await this.cafeRepository.selectCafes();
     return cafes.map(transformToResponse);
+  }
+
+  async getCafeById(cafeId: number): Promise<CafeResponse> {
+    const cafe = await this.cafeRepository.selectCafeById(cafeId);
+    return transformToResponse(cafe);
   }
 }

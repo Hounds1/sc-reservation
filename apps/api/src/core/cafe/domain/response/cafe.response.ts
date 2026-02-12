@@ -14,6 +14,12 @@ export class CafeResponse {
         identifiedName: string;
         extension: string;
     }[];
+    prices: {
+        priceId: number;
+        amountSubtotal: number;
+        amountTax: number;
+        amountTotal: number;
+    }[];
 }
 
 export function transformToResponse(cafe: Cafe): CafeResponse {
@@ -31,5 +37,20 @@ export function transformToResponse(cafe: Cafe): CafeResponse {
             identifiedName: image.identifiedName,
             extension: image.extension,
         })),
+        prices: cafe.prices.map((price) => ({
+            priceId: price.priceId,
+            amountSubtotal: price.amountSubtotal,
+            amountTax: price.amountTax,
+            amountTotal: price.amountTotal,
+            duration: price.duration,
+        })),
     };
+}
+
+export class CafePriceResponse {
+    priceId: number;
+    cafeId: number;
+    amountSubtotal: number;
+    amountTax: number;
+    amountTotal: number;
 }
