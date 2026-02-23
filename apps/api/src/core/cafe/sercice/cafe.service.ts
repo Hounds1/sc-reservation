@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CafeRepository } from "../repository/cafe.repository";
 import { CafeCreateRequestWithImages, CafeModifyRequestWithImages, CafePriceCreateRequest } from "../domain/request/cafe.request";
 import { Cafe, CafePrice, transformToEntity } from "../domain/cafe";
@@ -98,6 +98,7 @@ export class CafeService {
       );
 
       const cafe = await this.cafeRepository.selectCafeById(request.cafeId);
+      if (!cafe) throw new NotFoundException(`카페(ID: ${request.cafeId})를 찾을 수 없습니다.`);
       Object.assign(cafe, {
         ...(request.businessName != null && { businessName: request.businessName }),
         ...(request.address1 != null && { address1: request.address1 }),
@@ -142,6 +143,7 @@ export class CafeService {
 
   async getCafeById(cafeId: number): Promise<CafeResponse> {
     const cafe = await this.cafeRepository.selectCafeById(cafeId);
+    if (!cafe) throw new NotFoundException(`카페(ID: ${cafeId})를 찾을 수 없습니다.`);
     return transformToResponse(cafe);
   }
 }
