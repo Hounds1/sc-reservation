@@ -5,6 +5,7 @@ import { ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorato
 import { CafePriceResponse, CafeResponse } from "../domain/response/cafe.response";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { CafeCreateRequest, CafeModifyRequest, CafePriceCreateRequest } from "../domain/request/cafe.request";
+import { PublicEntrypoint } from "src/core/auth/decorators/public.entrypoint";
 
 @Controller('cafes')
 @ApiTags('카페')
@@ -12,9 +13,10 @@ export class CafeController {
 
     constructor(private readonly cafeService: CafeService) {}
 
-    @Get()
+    @Get('public/list')
     @ApiOperation({ summary: '카페 목록 조회' })
     @ApiWrappedResponse(CafeResponse)
+    @PublicEntrypoint()
     async getAllCafes(): Promise<CafeResponse[]> {
         return this.cafeService.getAllCafes();
     }

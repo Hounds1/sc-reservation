@@ -10,11 +10,19 @@
       "darkMode": "Toggle dark mode"
     },
     "home": {
-      "title": "Find Your Perfect Study Spot",
-      "subtitle": "From quiet cafes to private study rooms, reserve the ideal place for your focus.",
+      "title": "Find Your Study Space",
+      "subtitle": "Reserve a seat at a study cafe near you",
+      "searchPlaceholder": "Search by name or location...",
+      "noResults": "No results found.",
       "cta": {
         "explore": "Explore Spaces",
         "learnMore": "Learn More"
+      },
+      "cafe": {
+        "priceRange": "{min} ~ {max}",
+        "priceSingle": "{price}",
+        "noPrice": "No price info",
+        "planCount": "{count, plural, one {# plan} other {# plans}}"
       },
       "features": {
         "title": "Why Study Spot?",

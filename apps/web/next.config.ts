@@ -7,6 +7,18 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: '../../',
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);

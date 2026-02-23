@@ -10,11 +10,19 @@
       "darkMode": "다크모드 토글"
     },
     "home": {
-      "title": "완벽한 스터디 공간을 찾아보세요",
-      "subtitle": "조용한 카페부터 프라이빗 스터디룸까지, 당신의 집중을 위한 최적의 장소를 예약하세요.",
+      "title": "나만의 스터디 공간 찾기",
+      "subtitle": "가까운 스터디 카페에서 좌석을 예약하세요",
+      "searchPlaceholder": "이름 또는 위치로 검색...",
+      "noResults": "검색 결과가 없습니다.",
       "cta": {
         "explore": "공간 둘러보기",
         "learnMore": "자세히 알아보기"
+      },
+      "cafe": {
+        "priceRange": "{min}원 ~ {max}원",
+        "priceSingle": "{price}원",
+        "noPrice": "가격 정보 없음",
+        "planCount": "{count}개 요금제"
       },
       "features": {
         "title": "왜 Study Spot인가요?",
