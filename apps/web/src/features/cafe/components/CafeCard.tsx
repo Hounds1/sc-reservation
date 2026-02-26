@@ -59,6 +59,9 @@ export function CafeCard({ cafe }: CafeCardProps) {
         return new Intl.NumberFormat('ko-KR').format(amount);
     };
 
+    const usageRate = cafe.seatSummary?.usageRate ?? 0;
+    const seatColor = usageRate >= 80.0 ? '#DC2626' : usageRate > 50.0 ? '#B59F3B' : '#16A34A';
+
     return (
         <div
             className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
@@ -146,12 +149,24 @@ export function CafeCard({ cafe }: CafeCardProps) {
             {/* 정보 영역 */}
             <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <div className="flex items-center gap-1.5 text-sm">
+                        <svg className="w-4 h-4" style={{ color: seatColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
+                        {cafe.seatSummary && cafe.seatSummary.totalSeats > 0 ? (
+                            <span className="font-semibold" style={{ color: seatColor }}>
+                                {t('seatAvailable', {
+                                    available: cafe.seatSummary.availableSeats,
+                                    total: cafe.seatSummary.totalSeats,
+                                })}
+                            </span>
+                        ) : (
+                            <span className="text-gray-400">{t('noSeat')}</span>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                         {lowestPrice !== null ? (
-                            <span className="font-semibold text-green-700 dark:text-green-400">
+                            <span className="font-semibold text-gray-700 dark:text-gray-300">
                                 {highestPrice && highestPrice !== lowestPrice
                                     ? t('priceRange', { min: formatPrice(lowestPrice), max: formatPrice(highestPrice) })
                                     : t('priceSingle', { price: formatPrice(lowestPrice) })
@@ -161,11 +176,6 @@ export function CafeCard({ cafe }: CafeCardProps) {
                             <span className="text-gray-400">{t('noPrice')}</span>
                         )}
                     </div>
-                    {cafe.prices.length > 0 && (
-                        <span className="text-xs text-gray-400 dark:text-gray-500">
-                            {t('planCount', { count: cafe.prices.length })}
-                        </span>
-                    )}
                 </div>
 
                 {/* 뱃지 */}

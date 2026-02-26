@@ -22,7 +22,9 @@
         "priceRange": "{min}원 ~ {max}원",
         "priceSingle": "{price}원",
         "noPrice": "가격 정보 없음",
-        "planCount": "{count}개 요금제"
+        "planCount": "{count}개 요금제",
+        "seatAvailable": "{available}석 이용 가능 / {total}",
+        "noSeat": "좌석 정보 없음"
       },
       "features": {
         "title": "왜 Study Spot인가요?",

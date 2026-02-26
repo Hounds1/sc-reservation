@@ -22,7 +22,9 @@
         "priceRange": "{min} ~ {max}",
         "priceSingle": "{price}",
         "noPrice": "No price info",
-        "planCount": "{count, plural, one {# plan} other {# plans}}"
+        "planCount": "{count, plural, one {# plan} other {# plans}}",
+        "seatAvailable": "{available} available / {total}",
+        "noSeat": "No seat info"
       },
       "features": {
         "title": "Why Study Spot?",
