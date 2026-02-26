@@ -14,6 +14,13 @@ export type CafePrice = {
     duration?: number;
 };
 
+export type CafeBadge = {
+    badgeId: number;
+    title: string;
+    bgColor: string;
+    txtColor: string;
+};
+
 export type CafeResponse = {
     cafeId: number;
     businessName: string;
@@ -23,4 +30,5 @@ export type CafeResponse = {
     updatedAt: number | null;
     images: CafeImage[];
     prices: CafePrice[];
+    badges: CafeBadge[];
 };
