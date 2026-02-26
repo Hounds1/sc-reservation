@@ -4,7 +4,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
 import { CafePriceResponse, CafeResponse } from "../domain/response/cafe.response";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { CafeCreateRequest, CafeModifyRequest, CafePriceCreateRequest } from "../domain/request/cafe.request";
+import { CafeBadgeCreateRequest, CafeCreateRequest, CafeModifyRequest, CafePriceCreateRequest } from "../domain/request/cafe.request";
 import { PublicEntrypoint } from "src/core/auth/decorators/public.entrypoint";
 
 @Controller('cafes')
@@ -62,5 +62,16 @@ export class CafeController {
     ): Promise<CafeResponse> {
         body.forEach(price => price.cafeId = cafeId);
         return this.cafeService.createCafePrice(body);
+    }
+
+    @Post(':cafeId/badges')
+    @ApiOperation({ summary: '카페 뱃지 생성' })
+    @ApiWrappedResponse(CafeResponse)
+    async createCafeBadge(
+        @Param('cafeId') cafeId: number,
+        @Body() body: CafeBadgeCreateRequest[]
+    ): Promise<CafeResponse> {
+        body.forEach(badge => badge.cafeId = cafeId);
+        return this.cafeService.createCafeBadge(body);
     }
 }
