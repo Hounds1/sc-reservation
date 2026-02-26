@@ -1,6 +1,6 @@
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 import { CafeCreateRequestWithImages } from "./request/cafe.request";
-import { cafe_imagesModel, cafesModel, pricesModel } from "generated/prisma/models";
+import { badgesModel, cafe_imagesModel, cafesModel, pricesModel } from "generated/prisma/models";
 
 export class Cafe {
     cafeId: number;
@@ -11,6 +11,7 @@ export class Cafe {
     updatedAt: number | null;
     images: CafeImage[];
     prices: CafePrice[];
+    badges: CafeBadge[];
 }
 
 export class CafeImage {
@@ -30,6 +31,14 @@ export class CafePrice {
     duration: number; // 이용
 }
 
+export class CafeBadge {
+    badgeId: number;
+    cafeId: number;
+    title: string;
+    bgColor: string;
+    txtColor: string;
+}
+
 export function transformToCafeImage(image: cafe_imagesModel): CafeImage {
     return {
         imageId: Number(image.image_id),
@@ -37,6 +46,27 @@ export function transformToCafeImage(image: cafe_imagesModel): CafeImage {
         originName: image.origin_name,
         identifiedName: image.identified_name,
         extension: image.extension,
+    }
+}
+
+export function transformToCafePrice(price: pricesModel): CafePrice {
+    return {
+        priceId: Number(price.price_id),
+        cafeId: Number(price.cafe_id),
+        amountSubtotal: Number(price.amount_subtotal),
+        amountTax: Number(price.amount_tax),
+        amountTotal: Number(price.amount_total),
+        duration: Number(price.duration),
+    }
+}
+
+export function transformToCafeBadge(badge: badgesModel): CafeBadge {
+    return {
+        badgeId: Number(badge.badge_id),
+        cafeId: Number(badge.cafe_id),
+        title: badge.title,
+        bgColor: badge.bg_color,
+        txtColor: badge.txt_color,
     }
 }
 
@@ -56,6 +86,7 @@ export function transformToEntity(request: CafeCreateRequestWithImages): Cafe {
             extension: image.mimetype.split('/')[1] || '',
         })),
         prices: [],
+        badges: [],
     }
 }
 
@@ -70,6 +101,7 @@ export function mapCafeModelToCafe(prismaCafe: cafesModel): Cafe {
         updatedAt: prismaCafe.updated_at ? Number(prismaCafe.updated_at) : null,
         images: [],
         prices: [],
+        badges: [],
     };
 }
 
@@ -129,5 +161,35 @@ export function mapCafeModelToCafeWithPricesAndImages(
             amountTotal: Number(price.amount_total),
             duration: Number(price.duration),
         })),
+    };
+}
+
+export function mapCafeModelToCafeWithBadges(
+    prismaCafe: cafesModel,
+    prismaBadges: badgesModel[],
+): Cafe {
+    return {
+        ...mapCafeModelToCafe(prismaCafe),
+        badges: prismaBadges.map((badge) => ({
+            badgeId: Number(badge.badge_id),
+            cafeId: Number(badge.cafe_id),
+            title: badge.title,
+            bgColor: badge.bg_color,
+            txtColor: badge.txt_color,
+        })),
+    };
+}
+
+export function mapCafeModelToCafeWithAllElements(
+    prismaCafe: cafesModel,
+    prismaImages: cafe_imagesModel[],
+    prismaPrices: pricesModel[],
+    prismaBadges: badgesModel[],
+): Cafe {
+    return {
+        ...mapCafeModelToCafe(prismaCafe),
+        images: prismaImages.map(transformToCafeImage),
+        prices: prismaPrices.map(transformToCafePrice),
+        badges: prismaBadges.map(transformToCafeBadge),
     };
 }

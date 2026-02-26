@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
-import { Cafe, CafeImage, CafePrice, mapCafeModelToCafeWithImages, mapCafeModelToCafeWithPrices, mapCafeModelToCafeWithPricesAndImages, transformToCafeImage } from "../domain/cafe";
+import { Cafe, CafeBadge, CafeImage, CafePrice, mapCafeModelToCafeWithAllElements, mapCafeModelToCafeWithBadges, mapCafeModelToCafeWithImages, mapCafeModelToCafeWithPrices, mapCafeModelToCafeWithPricesAndImages, transformToCafeImage } from "../domain/cafe";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 
 @Injectable()
@@ -110,16 +110,42 @@ export class CafeRepository {
         return mapCafeModelToCafeWithPrices(result, result.prices);
     }
 
+    async createCafeBadges(badges: CafeBadge[]): Promise<Cafe> {
+
+        const result = await this.prismaConnector.$transaction(async (tx) => {
+            await tx.badges.createMany({
+                data: badges.map((badge) => ({
+                    cafe_id: badge.cafeId,
+                    title: badge.title,
+                    bg_color: badge.bgColor,
+                    txt_color: badge.txtColor,
+                })),
+            });
+
+            const cafe = await tx.cafes.findUnique({
+                where: { cafe_id: badges[0].cafeId },
+                include: {
+                    badges: true,
+                },
+            });
+
+            return cafe;
+        });
+
+        return mapCafeModelToCafeWithBadges(result, result.badges);
+    }
+
     async selectCafeById(cafeId: number): Promise<Cafe> {
         const result = await this.prismaConnector.cafes.findUnique({
             where: { cafe_id: cafeId },
             include: {
                 images: true,
                 prices: true,
+                badges: true,
             },
         });
 
-        return mapCafeModelToCafeWithPricesAndImages(result, result.images, result.prices);
+        return mapCafeModelToCafeWithAllElements(result, result.images, result.prices, result.badges);
     }
 
     async selectCafeImagesByCafeId(cafeId: number): Promise<CafeImage[]> {
@@ -135,9 +161,10 @@ export class CafeRepository {
             include: {
                 images: true,
                 prices: true,
+                badges: true,
             },
         });
 
-        return result.map((cafe) => mapCafeModelToCafeWithPricesAndImages(cafe, cafe.images, cafe.prices));
+        return result.map((cafe) => mapCafeModelToCafeWithAllElements(cafe, cafe.images, cafe.prices, cafe.badges));
     }
 }

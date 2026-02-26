@@ -20,6 +20,12 @@ export class CafeResponse {
         amountTax: number;
         amountTotal: number;
     }[];
+    badges: {
+        badgeId: number;
+        title: string;
+        bgColor: string;
+        txtColor: string;
+    }[];
 }
 
 export function transformToResponse(cafe: Cafe): CafeResponse {
@@ -43,6 +49,12 @@ export function transformToResponse(cafe: Cafe): CafeResponse {
             amountTax: price.amountTax,
             amountTotal: price.amountTotal,
             duration: price.duration,
+        })),
+        badges: cafe.badges.map((badge) => ({
+            badgeId: badge.badgeId,
+            title: badge.title,
+            bgColor: badge.bgColor,
+            txtColor: badge.txtColor,
         })),
     };
 }

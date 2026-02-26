@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CafeRepository } from "../repository/cafe.repository";
-import { CafeCreateRequestWithImages, CafeModifyRequestWithImages, CafePriceCreateRequest } from "../domain/request/cafe.request";
-import { Cafe, CafePrice, transformToEntity } from "../domain/cafe";
+import { CafeBadgeCreateRequest, CafeCreateRequestWithImages, CafeModifyRequestWithImages, CafePriceCreateRequest } from "../domain/request/cafe.request";
+import { Cafe, CafeBadge, CafePrice, transformToEntity } from "../domain/cafe";
 import { CafePriceResponse, CafeResponse, transformToResponse } from "../domain/response/cafe.response";
 import { StorageService } from "../../storage/service/storage.service";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
@@ -46,6 +46,7 @@ export class CafeService {
         updatedAt: null,
         images: imagesWithPaths,
         prices: [],
+        badges: [],
       };
 
       const createdCafe = await this.cafeRepository.createCafe(cafeEntity);
@@ -134,6 +135,24 @@ export class CafeService {
     const cafeWithPrices = await this.cafeRepository.createCafePrices(prices);
 
     return transformToResponse(cafeWithPrices);
+  }
+
+  async createCafeBadge(request: CafeBadgeCreateRequest[]): Promise<CafeResponse> {
+    const badges = await Promise.all(request.map(async (badge) => {
+      const transformedBadge: CafeBadge = {
+        badgeId: null,
+        cafeId: badge.cafeId,
+        title: badge.title,
+        bgColor: badge.bgColor,
+        txtColor: badge.txtColor,
+      };
+
+      return transformedBadge;
+    }));
+
+    const cafeWithBadges = await this.cafeRepository.createCafeBadges(badges);
+
+    return transformToResponse(cafeWithBadges);
   }
 
   async getAllCafes(): Promise<CafeResponse[]> {

@@ -1,6 +1,6 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 export class CafeCreateRequest {
 
@@ -145,4 +145,51 @@ export class CafePriceCreateRequest {
     get cafeId(): number {
         return this._cafeId;
     }
+}
+
+
+export class CafeBadgeCreateRequest {
+    
+    @ApiHideProperty()
+    _cafeId : number;
+    
+    set cafeId(value: number) {
+        this._cafeId = value;
+    }
+    
+    get cafeId(): number {
+        return this._cafeId;
+    }
+
+    @ApiProperty({
+        description: 'The title of the badge',
+        example: 'Best Cafe',
+    })
+    @IsNotEmpty({ message: 'Title is required' })
+    @IsString({ message: 'Title must be a string' })
+    @MinLength(1, { message: 'Title must be at least 3 characters long' })
+    @MaxLength(13, { message: 'Title must be less than 255 characters long' })
+    title: string;
+
+    @ApiProperty({
+        description: 'The background color of the badge',
+        example: '#000000',
+    })
+    @Matches(/^#([0-9a-fA-F]{6})$/, { message: 'Background color must be a valid hex color' })
+    @IsNotEmpty({ message: 'Background color is required' })
+    @IsString({ message: 'Background color must be a string' })
+    @MinLength(1, { message: 'Background color must be at least 3 characters long' })
+    @MaxLength(8, { message: 'Background color must be less than 255 characters long' })
+    bgColor: string;
+    
+    @ApiProperty({
+        description: 'The text color of the badge',
+        example: '#FFFFFF',
+    })
+    @Matches(/^#([0-9a-fA-F]{6})$/, { message: 'Text color must be a valid hex color' })
+    @IsNotEmpty({ message: 'Text color is required' })
+    @IsString({ message: 'Text color must be a string' })
+    @MinLength(1, { message: 'Text color must be at least 3 characters long' })
+    @MaxLength(8, { message: 'Text color must be less than 255 characters long' })
+    txtColor: string;
 }
