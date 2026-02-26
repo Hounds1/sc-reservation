@@ -33,6 +33,15 @@ export function ApiWrappedResponse<T>(dataType: Type<T>) {
     );
   }
 
+export function ApiWrappedArrayResponse<T>(dataType: Type<T>[]) {
+  return applyDecorators(
+    ApiExtraModels(...dataType),
+    ApiResponse({
+      schema: { type: 'array', items: { $ref: getSchemaPath(dataType[0]) } }
+    })
+  );
+}
+
 export function ApiWrappedVoidResponse() {
   return applyDecorators(
     ApiResponse({ schema: { type: 'object', properties: { success: { type: 'boolean', example: true } } } })

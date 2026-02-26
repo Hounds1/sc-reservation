@@ -38,6 +38,7 @@ model cafes {
   images cafe_images[]
   prices prices[]
   badges badges[]
+  seats seats[]
 }
 
 model cafe_images {
@@ -68,6 +69,18 @@ model badges {
   title String @db.Text
   bg_color String @db.Text
   txt_color String @db.Text
+
+  cafe cafes @relation(fields: [cafe_id], references: [cafe_id])
+}
+
+model seats {
+  seat_id BigInt @id @default(autoincrement())
+  cafe_id BigInt
+  seat_name String @db.Text
+  state String @db.VarChar(20) @default("AVAILABLE")
+  location String @db.Text
+  seat_type String @db.VarChar(20) @default("NORMAL")
+  seat_number Decimal @db.Decimal(18, 2)
 
   cafe cafes @relation(fields: [cafe_id], references: [cafe_id])
 }

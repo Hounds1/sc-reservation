@@ -1,6 +1,7 @@
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 import { CafeCreateRequestWithImages } from "./request/cafe.request";
-import { badgesModel, cafe_imagesModel, cafesModel, pricesModel } from "generated/prisma/models";
+import { badgesModel, cafe_imagesModel, cafesModel, pricesModel, seatsModel } from "generated/prisma/models";
+import { Seat, transformToSeat } from "src/core/seat/domain/seat";
 
 export class Cafe {
     cafeId: number;
@@ -12,6 +13,7 @@ export class Cafe {
     images: CafeImage[];
     prices: CafePrice[];
     badges: CafeBadge[];
+    seats: Seat[];
 }
 
 export class CafeImage {
@@ -87,6 +89,7 @@ export function transformToEntity(request: CafeCreateRequestWithImages): Cafe {
         })),
         prices: [],
         badges: [],
+        seats: [],
     }
 }
 
@@ -102,6 +105,7 @@ export function mapCafeModelToCafe(prismaCafe: cafesModel): Cafe {
         images: [],
         prices: [],
         badges: [],
+        seats: [],
     };
 }
 
@@ -185,11 +189,13 @@ export function mapCafeModelToCafeWithAllElements(
     prismaImages: cafe_imagesModel[],
     prismaPrices: pricesModel[],
     prismaBadges: badgesModel[],
+    prismaSeats: seatsModel[],
 ): Cafe {
     return {
         ...mapCafeModelToCafe(prismaCafe),
         images: prismaImages.map(transformToCafeImage),
         prices: prismaPrices.map(transformToCafePrice),
         badges: prismaBadges.map(transformToCafeBadge),
+        seats: prismaSeats.map(transformToSeat),
     };
 }

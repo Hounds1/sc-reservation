@@ -47,6 +47,7 @@ export class CafeService {
         images: imagesWithPaths,
         prices: [],
         badges: [],
+        seats: [],
       };
 
       const createdCafe = await this.cafeRepository.createCafe(cafeEntity);

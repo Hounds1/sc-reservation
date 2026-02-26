@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaConnector } from "src/global/prisma/prisma.connector";
-import { Cafe, CafeBadge, CafeImage, CafePrice, mapCafeModelToCafeWithAllElements, mapCafeModelToCafeWithBadges, mapCafeModelToCafeWithImages, mapCafeModelToCafeWithPrices, mapCafeModelToCafeWithPricesAndImages, transformToCafeImage } from "../domain/cafe";
+import { Cafe, CafeBadge, CafeImage, CafePrice, mapCafeModelToCafeWithAllElements, mapCafeModelToCafeWithBadges, mapCafeModelToCafeWithImages, mapCafeModelToCafeWithPrices, transformToCafeImage } from "../domain/cafe";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 
 @Injectable()
@@ -142,10 +142,11 @@ export class CafeRepository {
                 images: true,
                 prices: true,
                 badges: true,
+                seats: true,
             },
         });
 
-        return mapCafeModelToCafeWithAllElements(result, result.images, result.prices, result.badges);
+        return mapCafeModelToCafeWithAllElements(result, result.images, result.prices, result.badges, result.seats);
     }
 
     async selectCafeImagesByCafeId(cafeId: number): Promise<CafeImage[]> {
@@ -162,9 +163,10 @@ export class CafeRepository {
                 images: true,
                 prices: true,
                 badges: true,
+                seats: true,
             },
         });
 
-        return result.map((cafe) => mapCafeModelToCafeWithAllElements(cafe, cafe.images, cafe.prices, cafe.badges));
+        return result.map((cafe) => mapCafeModelToCafeWithAllElements(cafe, cafe.images, cafe.prices, cafe.badges, cafe.seats));
     }
 }
