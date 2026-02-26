@@ -144,7 +144,7 @@ export function CafeCard({ cafe }: CafeCardProps) {
             </div>
 
             {/* 정보 영역 */}
-            <div className="p-4">
+            <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,6 +167,24 @@ export function CafeCard({ cafe }: CafeCardProps) {
                         </span>
                     )}
                 </div>
+
+                {/* 뱃지 */}
+                {cafe.badges?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {cafe.badges.map((badge) => (
+                            <span
+                                key={badge.badgeId}
+                                className="px-2.5 py-1 text-xs font-medium rounded-md"
+                                style={{
+                                    backgroundColor: badge.bgColor,
+                                    color: badge.txtColor,
+                                }}
+                            >
+                                {badge.title}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
