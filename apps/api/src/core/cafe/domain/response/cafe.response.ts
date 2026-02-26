@@ -1,4 +1,11 @@
 import { Cafe } from "../cafe";
+import { SeatState } from "src/core/seat/domain/seat";
+
+export class CafeSeatSummary {
+    totalSeats: number;
+    availableSeats: number;
+    usageRate: number;
+}
 
 export class CafeResponse {
     cafeId: number;
@@ -26,6 +33,7 @@ export class CafeResponse {
         bgColor: string;
         txtColor: string;
     }[];
+    seatSummary: CafeSeatSummary;
 }
 
 export function transformToResponse(cafe: Cafe): CafeResponse {
@@ -56,7 +64,20 @@ export function transformToResponse(cafe: Cafe): CafeResponse {
             bgColor: badge.bgColor,
             txtColor: badge.txtColor,
         })),
+        seatSummary: buildSeatSummary(cafe),
     };
+}
+
+function buildSeatSummary(cafe: Cafe): CafeSeatSummary {
+    const totalSeats = cafe.seats.length;
+    const availableSeats = cafe.seats.filter(
+        (seat) => seat.state === SeatState.AVAILABLE,
+    ).length;
+    const usageRate = totalSeats > 0
+        ? Math.round(((totalSeats - availableSeats) / totalSeats) * 10000) / 100
+        : 0;
+
+    return { totalSeats, availableSeats, usageRate };
 }
 
 export class CafePriceResponse {
