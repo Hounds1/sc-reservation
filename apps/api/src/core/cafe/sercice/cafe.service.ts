@@ -5,13 +5,18 @@ import { Cafe, CafeBadge, CafePrice, transformToEntity } from "../domain/cafe";
 import { CafePriceResponse, CafeResponse, transformToResponse } from "../domain/response/cafe.response";
 import { StorageService } from "../../storage/service/storage.service";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
+import { TransactionManager } from "src/global/prisma/transaction.manager";
 
 @Injectable()
 export class CafeService {
 
   private readonly CAFE_IMAGE_PATH = 'cafe';
 
-  constructor(private readonly cafeRepository: CafeRepository, private readonly storageService: StorageService) { }
+  constructor(
+    private readonly cafeRepository: CafeRepository,
+    private readonly storageService: StorageService,
+    private readonly txManager: TransactionManager,
+  ) { }
 
   async createCafe(request: CafeCreateRequestWithImages): Promise<CafeResponse> {
     const savedPaths: string[] = [];
@@ -50,11 +55,12 @@ export class CafeService {
         seats: [],
       };
 
-      const createdCafe = await this.cafeRepository.createCafe(cafeEntity);
+      const createdCafe = await this.txManager.run(async () => {
+        return this.cafeRepository.createCafe(cafeEntity);
+      });
 
       return transformToResponse(createdCafe);
     } catch (error) {
-      // 실패하거나 트랜잭션 터졌을 때 보상 개념 << 보상 :: 상 주는거 아님. 잘못된 부분 메꾸는 행위
       if (savedPaths.length > 0) await this.storageService.deleteFiles(savedPaths);
       throw error;
     }
@@ -108,7 +114,9 @@ export class CafeService {
       });
       cafe.images = cafe.images.filter((img) => !deleteIdSet.has(img.imageId)).concat(imagesWithPaths);
 
-      const updatedCafe = await this.cafeRepository.updateCafe(cafe, deleteImageIds);
+      const updatedCafe = await this.txManager.run(async () => {
+        return this.cafeRepository.updateCafe(cafe, deleteImageIds);
+      });
 
       await this.storageService.deleteFiles(filePathsToDelete);
 
@@ -120,7 +128,7 @@ export class CafeService {
   }
 
   async createCafePrice(request: CafePriceCreateRequest[]): Promise<CafeResponse> {
-    const prices = await Promise.all(request.map(async (price) => {
+    const prices = request.map((price) => {
       const transformedPrice: CafePrice = {
         priceId: null,
         cafeId: price.cafeId,
@@ -129,17 +137,18 @@ export class CafeService {
         amountTotal: price.amountTotal,
         duration: price.duration,
       };
-
       return transformedPrice;
-    }));
+    });
 
-    const cafeWithPrices = await this.cafeRepository.createCafePrices(prices);
+    const cafeWithPrices = await this.txManager.run(async () => {
+      return this.cafeRepository.createCafePrices(prices);
+    });
 
     return transformToResponse(cafeWithPrices);
   }
 
   async createCafeBadge(request: CafeBadgeCreateRequest[]): Promise<CafeResponse> {
-    const badges = await Promise.all(request.map(async (badge) => {
+    const badges = request.map((badge) => {
       const transformedBadge: CafeBadge = {
         badgeId: null,
         cafeId: badge.cafeId,
@@ -147,11 +156,12 @@ export class CafeService {
         bgColor: badge.bgColor,
         txtColor: badge.txtColor,
       };
-
       return transformedBadge;
-    }));
+    });
 
-    const cafeWithBadges = await this.cafeRepository.createCafeBadges(badges);
+    const cafeWithBadges = await this.txManager.run(async () => {
+      return this.cafeRepository.createCafeBadges(badges);
+    });
 
     return transformToResponse(cafeWithBadges);
   }

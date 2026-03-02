@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '../../../generated/prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { TransactionClient, TransactionContext } from './transaction.context';
 
 @Injectable()
 export class PrismaConnector extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -31,5 +32,9 @@ export class PrismaConnector extends PrismaClient implements OnModuleInit, OnMod
   async onModuleDestroy() {
     await this.$disconnect();
     await this.pool.end();
+  }
+
+  getClient(): TransactionClient | this {
+    return TransactionContext.getClient() ?? this;
   }
 }
