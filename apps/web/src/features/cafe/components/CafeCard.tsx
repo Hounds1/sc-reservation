@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { CafeResponse } from '../services/types';
 
 type CafeCardProps = {
@@ -19,6 +20,7 @@ function resolveImageSrc(src: string): string {
 
 export function CafeCard({ cafe }: CafeCardProps) {
     const t = useTranslations('home.cafe');
+    const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const images = cafe.images?.length > 0
@@ -67,6 +69,7 @@ export function CafeCard({ cafe }: CafeCardProps) {
             className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
+            onClick={() => router.push(`/cafes/${cafe.cafeId}`)}
         >
             {/* 이미지 캐러셀 */}
             <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 dark:bg-gray-700">
