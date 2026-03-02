@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Put, UploadedFiles, UseInterceptors
 import { CafeService } from "../sercice/cafe.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ApiWrappedResponse } from "src/global/swagger/wrapped.response.decorator";
-import { CafePriceResponse, CafeResponse } from "../domain/response/cafe.response";
+import { CafeDetailResponse, CafePriceResponse, CafeResponse } from "../domain/response/cafe.response";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { CafeBadgeCreateRequest, CafeCreateRequest, CafeModifyRequest, CafePriceCreateRequest } from "../domain/request/cafe.request";
 import { PublicEntrypoint } from "src/core/auth/decorators/public.entrypoint";
@@ -19,6 +19,14 @@ export class CafeController {
     @PublicEntrypoint()
     async getAllCafes(): Promise<CafeResponse[]> {
         return this.cafeService.getAllCafes();
+    }
+
+    @Get('public/:cafeId')
+    @ApiOperation({ summary: '카페 상세 조회 (공개)' })
+    @ApiWrappedResponse(CafeDetailResponse)
+    @PublicEntrypoint()
+    async getCafeDetailById(@Param('cafeId') cafeId: number): Promise<CafeDetailResponse> {
+        return this.cafeService.getCafeDetailById(cafeId);
     }
 
     @Get(':cafeId')

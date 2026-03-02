@@ -20,7 +20,7 @@
       },
       "cafe": {
         "priceRange": "{min} ~ {max}",
-        "priceSingle": "{price}",
+        "priceSingle": "{price}/hr",
         "noPrice": "No price info",
         "planCount": "{count, plural, one {# plan} other {# plans}}",
         "seatAvailable": "{available} available / {total}",
@@ -41,6 +41,31 @@
           "description": "Analyze your study time and patterns to build more efficient learning habits."
         }
       }
+    },
+    "cafeDetail": {
+      "backToCafes": "Back to cafes",
+      "cafeInfo": "Cafe Info",
+      "price": "Price",
+      "pricePerHour": "{price}/hr",
+      "priceRangeDetail": "{min} ~ {max}",
+      "available": "Available",
+      "availableSeats": "{available} / {total} seats",
+      "amenities": "Amenities",
+      "selectSeatPrompt": "Please select a seat",
+      "proceedReservation": "Proceed to reservation",
+      "selectedSeat": "Selected Seat",
+      "seatNumber": "Seat No.",
+      "seatType": "Type",
+      "seatSelection": "Seat Selection",
+      "legendAvailable": "Available",
+      "legendSelected": "Selected",
+      "legendOccupied": "In use",
+      "seatTypeNormal": "Normal",
+      "seatTypeWindowSide": "Window",
+      "seatTypeSilent": "Quiet Zone",
+      "seatTypeGroup": "Group",
+      "seatTypeOther": "Other",
+      "notFound": "Cafe not found."
     },
     "auth": {
       "login": {

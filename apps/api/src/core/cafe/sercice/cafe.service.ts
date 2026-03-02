@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { CafeRepository } from "../repository/cafe.repository";
 import { CafeBadgeCreateRequest, CafeCreateRequestWithImages, CafeModifyRequestWithImages, CafePriceCreateRequest } from "../domain/request/cafe.request";
 import { Cafe, CafeBadge, CafePrice, transformToEntity } from "../domain/cafe";
-import { CafePriceResponse, CafeResponse, transformToResponse } from "../domain/response/cafe.response";
+import { CafeDetailResponse, CafePriceResponse, CafeResponse, transformToDetailResponse, transformToResponse } from "../domain/response/cafe.response";
 import { StorageService } from "../../storage/service/storage.service";
 import { DatetimeProvider } from "src/global/providers/chrono/datetime.provider";
 import { TransactionManager } from "src/global/prisma/transaction.manager";
@@ -175,5 +175,11 @@ export class CafeService {
     const cafe = await this.cafeRepository.selectCafeById(cafeId);
     if (!cafe) throw new NotFoundException(`카페(ID: ${cafeId})를 찾을 수 없습니다.`);
     return transformToResponse(cafe);
+  }
+
+  async getCafeDetailById(cafeId: number): Promise<CafeDetailResponse> {
+    const cafe = await this.cafeRepository.selectCafeById(cafeId);
+    if (!cafe) throw new NotFoundException(`카페(ID: ${cafeId})를 찾을 수 없습니다.`);
+    return transformToDetailResponse(cafe);
   }
 }

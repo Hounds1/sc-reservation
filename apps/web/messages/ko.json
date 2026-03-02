@@ -20,7 +20,7 @@
       },
       "cafe": {
         "priceRange": "{min}원 ~ {max}원",
-        "priceSingle": "{price}원",
+        "priceSingle": "{price}원/시간",
         "noPrice": "가격 정보 없음",
         "planCount": "{count}개 요금제",
         "seatAvailable": "{available}석 이용 가능 / {total}",
@@ -41,6 +41,31 @@
           "description": "공부 시간과 패턴을 분석하여 더 효율적인 학습 습관을 만들어보세요."
         }
       }
+    },
+    "cafeDetail": {
+      "backToCafes": "카페 목록으로",
+      "cafeInfo": "카페 정보",
+      "price": "가격",
+      "pricePerHour": "{price}원/시간",
+      "priceRangeDetail": "{min}원 ~ {max}원",
+      "available": "이용 가능",
+      "availableSeats": "{available} / {total}석",
+      "amenities": "편의시설",
+      "selectSeatPrompt": "좌석을 선택해주세요",
+      "proceedReservation": "예약 진행하기",
+      "selectedSeat": "선택한 좌석",
+      "seatNumber": "좌석 번호",
+      "seatType": "유형",
+      "seatSelection": "좌석 선택",
+      "legendAvailable": "이용 가능",
+      "legendSelected": "선택됨",
+      "legendOccupied": "사용 중",
+      "seatTypeNormal": "일반",
+      "seatTypeWindowSide": "창가",
+      "seatTypeSilent": "조용한 구역",
+      "seatTypeGroup": "그룹",
+      "seatTypeOther": "기타",
+      "notFound": "카페를 찾을 수 없습니다."
     },
     "auth": {
       "login": {

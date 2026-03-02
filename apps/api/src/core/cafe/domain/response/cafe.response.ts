@@ -80,6 +80,33 @@ function buildSeatSummary(cafe: Cafe): CafeSeatSummary {
     return { totalSeats, availableSeats, usageRate };
 }
 
+export class CafeSeatDetail {
+    seatId: number;
+    seatName: string;
+    state: string;
+    location: string;
+    seatType: string;
+    seatNumber: number;
+}
+
+export class CafeDetailResponse extends CafeResponse {
+    seats: CafeSeatDetail[];
+}
+
+export function transformToDetailResponse(cafe: Cafe): CafeDetailResponse {
+    return {
+        ...transformToResponse(cafe),
+        seats: cafe.seats.map((seat) => ({
+            seatId: seat.seatId,
+            seatName: seat.seatName,
+            state: seat.state,
+            location: seat.location,
+            seatType: seat.seatType,
+            seatNumber: seat.seatNumber,
+        })),
+    };
+}
+
 export class CafePriceResponse {
     priceId: number;
     cafeId: number;

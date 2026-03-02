@@ -27,6 +27,15 @@ export type CafeSeatSummary = {
     usageRate: number;
 };
 
+export type CafeSeat = {
+    seatId: number;
+    seatName: string;
+    state: string;
+    location: string;
+    seatType: string;
+    seatNumber: number;
+};
+
 export type CafeResponse = {
     cafeId: number;
     businessName: string;
@@ -38,4 +47,8 @@ export type CafeResponse = {
     prices: CafePrice[];
     badges: CafeBadge[];
     seatSummary: CafeSeatSummary;
+};
+
+export type CafeDetailResponse = CafeResponse & {
+    seats: CafeSeat[];
 };
